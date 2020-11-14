@@ -24,7 +24,7 @@ if torch.cuda.is_available():
   torch.set_default_tensor_type('torch.cuda.FloatTensor')
 else:
   torch.set_default_tensor_type('torch.FloatTensor')
-with open("/Users/benediktschesch/MyEnv/Vectorization_GNN/temp/Vect_dic_data.pkl", "rb") as fp:   # Unpickling
+with open("/Users/benediktschesch/MyEnv/temp/Vect_dic_data.pkl", "rb") as fp:   # Unpickling
     raw_data = pickle.load(fp)
 max_vocab = raw_data["dim_in"]
 X = raw_data["X"]

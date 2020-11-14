@@ -121,5 +121,5 @@ for file in tqdm(paths):
             data_points.append({"G":G,"free_symbols":free_symbols.difference(params),"params":params,"file": file})
             max_params = max(len(params),max_params)
 output = {"max_free_symbols":max_free_symbols,"max_params":max_params,"data":data_points}
-with open("/Users/benediktschesch/MyEnv/Vectorization_GNN/temp/Vect_graphs_raw.pkl", "wb") as fp:
+with open("/Users/benediktschesch/MyEnv/temp/Vect_graphs_raw.pkl", "wb") as fp:
     symbolic.SympyAwarePickler(fp).dump(output)
