@@ -1,4 +1,6 @@
 import dace
+import random
+from dace.frontend.operations import detect_reduction_type
 def range2list(range,dic_free_symbols):
     text = []
     for rge in range:
@@ -18,7 +20,7 @@ def memlet2dic(memlet,dic_free_symbols):
 
 def map2dic(map,dic_free_symbols,str_dic_params):
     dic = []
-    for i in range(map["num_params"]):
+    for i in reversed(range(map["num_params"])):
         dic += [(str_dic_params[map["param"+str(i)]],range2list(map["range"+str(i)],dic_free_symbols))]
     return dic
 
@@ -37,7 +39,10 @@ def extract_memlet(Memlet):
     dictionary = {}
     dictionary["Volume"] = Memlet.data.volume
     dictionary["Dynamic"] = Memlet.data.dynamic
-    dictionary["wcr"] = Memlet.data.wcr
+    if detect_reduction_type(Memlet.data.wcr) is not None:
+        dictionary["wcr"] = detect_reduction_type(Memlet.data.wcr)
+    else:
+        dictionary["wcr"] = 0
     num_range = 0
     if Memlet.data.is_empty():
         dictionary["empty"] = True

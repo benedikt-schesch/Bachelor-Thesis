@@ -51,7 +51,7 @@ if not my_file.is_file():
     compute_paths()
 with open("/Users/benediktschesch/MyEnv/temp/sdfg_paths.pkl", "rb") as fp:
     paths = pickle.load(fp)
-#paths = paths[0:20]
+#paths = paths[0:10]
 
 #Metadata Initialization
 count = 0
@@ -60,7 +60,7 @@ max_free_symbols = 0
 max_params = 0
 
 #Define transformations to analyze
-transformations_tasklet = [Vectorization]
+transformations_tasklet = [Vectorization,Vectorization]
 transformations_map_entry = []
 
 
@@ -78,6 +78,9 @@ for file in tqdm(paths):
         
         #Itterate over all states
         for state in sdfg.states():
+            #Skip empty states
+            if len(state.nodes()) == 0:
+                continue
             #Initialize Metadata
             free_symbols = set({})
             params = set({})
@@ -85,14 +88,22 @@ for file in tqdm(paths):
             node_to_idx = {}
             G = nx.Graph()
             valid = False
-            trans_dic = {}
-
+            map_entry = []
+            tasklet = []
+        
             #Compute possible transformation points
-            for trans in transformations_tasklet:
-                trans_dic[trans] = {"results":[],"data_points":[],"nodes":[i.query_node(sdfg.sdfg_list[i.sdfg_id],i._tasklet) for i in opt.get_pattern_matches(patterns=transformations_tasklet)]}
-            for trans in transformations_map_entry:
-                trans_dic[trans] = {"results":[],"data_points":[],"nodes":[i.query_node(sdfg.sdfg_list[i.sdfg_id],i._map_entry) for i in opt.get_pattern_matches(patterns=transformations_map_entry)]}
+
+            list_trans_map_entry = [{"results":[],"nodes": \
+                [i.query_node(sdfg.sdfg_list[i.sdfg_id],i._tasklet) for i in \
+                    opt.get_pattern_matches(patterns=[trans])]} for \
+                        trans in transformations_map_entry]
+            list_trans_tasklet = [{"results":[],"nodes": \
+                [i.query_node(sdfg.sdfg_list[i.sdfg_id],i._tasklet) for i in \
+                    opt.get_pattern_matches(patterns=[trans])]} for \
+                        trans in transformations_tasklet]
+
             
+
             #Create Graph in networkx
             for count,node in enumerate(state.nodes()):
                 nodes += [(count,{"attr": node})]
@@ -109,26 +120,32 @@ for file in tqdm(paths):
             #Extract Node data and Transformation
             for node in G.nodes(data = True):
                 free_symbols.update(node[1]["attr"].free_symbols)
+                node[1]["Type"] = type(node[1]["attr"]).__name__
                 if isinstance(node[1]["attr"],MapEntry):
+                    map_entry.append(node[0])
                     if has_dynamic_map_inputs(state,node[1]["attr"]):
                         valid = False
                         break
-                    for trans in transformations_map_entry:
-                        trans_dic[trans]["data_points"].append(node[0])
-                        trans_dic[trans]["results"].append(node[1]["attr"] in trans_dic[trans]["nodes"])
+                    #valid = True #Unmark if map entry transformation is present
+                    for dic in list_trans_map_entry:
+                        if node[1]["attr"] in dic["nodes"]:
+                            dic["results"].append(1)
+                        else:
+                            dic["results"].append(0)
                     params.update(node[1]["attr"].params)
-                    node[1]["attr"] = {"data":extract_map(node[1]["attr"]),"Type":"MapEntry"}
-                elif isinstance(node[1]["attr"], MapExit):
-                    node[1]["attr"] = {"Type":"MapExit"}
-                elif isinstance(node[1]["attr"], AccessNode):
-                    node[1]["attr"] = {"data":node[1]["attr"].data,"Type":"AccessNode"}
+                    node[1]["attr"] = extract_map(node[1]["attr"])
                 elif isinstance(node[1]["attr"],Tasklet):
-                    valid = True
-                    for trans in transformations_tasklet:
-                        trans_dic[trans]["data_points"].append(node[0])
-                        trans_dic[trans]["results"].append(node[1]["attr"] in trans_dic[trans]["nodes"])
-                elif isinstance(node[1]["attr"],NestedSDFG):
-                    node[1]["attr"] = {"Type":"NestedSDFG"}
+                    tasklet.append(node[0])
+                    valid = True #Unmark if tasklet transformation is present
+                    for dic in list_trans_tasklet:
+                        if node[1]["attr"] in dic["nodes"]:
+                            dic["results"].append(1)
+                        else:
+                            dic["results"].append(0)
+                    del node[1]["attr"]
+                elif isinstance(node[1]["attr"],(MapExit,NestedSDFG,AccessNode)):
+                    del node[1]["attr"]
+                    continue
                 elif isinstance(node[1]["attr"],ConsumeEntry) or isinstance(node[1]["attr"],ConsumeExit):
                     valid = False
                     break
@@ -138,18 +155,20 @@ for file in tqdm(paths):
                     break
                 
             #Compute possible transformation points
-            for trans in transformations_tasklet:
-                del trans_dic[trans]["nodes"]
-            for trans in transformations_map_entry:
-                del trans_dic[trans]["nodes"]
+            for trans in list_trans_tasklet:
+                del trans["nodes"]
+            for trans in list_trans_map_entry:
+                del trans["nodes"]
             
             #Add graph if valid
             if valid:
                 max_free_symbols = max(max_free_symbols,len(free_symbols.difference(params)))
                 data_points.append({"G":G,"free_symbols":free_symbols.difference(params),\
-                    "params":params,"file": file,"transformations":trans_dic})
+                    "params":params,"file": file,"list_trans_map_entry":list_trans_map_entry,\
+                    "list_trans_tasklet":list_trans_tasklet,"tasklet":tasklet,"map_entry":map_entry})
                 max_params = max(len(params),max_params)
 #Store output
-output = {"max_free_symbols":max_free_symbols,"max_params":max_params,"data":data_points}
+output = {"max_free_symbols":max_free_symbols,"max_params":max_params,"data":data_points, \
+    "transformations_map_entry": transformations_map_entry, "transformations_tasklet":transformations_tasklet}
 with open("/Users/benediktschesch/MyEnv/temp/Graphs_raw.pkl", "wb") as fp:
     symbolic.SympyAwarePickler(fp).dump(output)

@@ -129,7 +129,8 @@ class TensorizedGraph2ClassSample(NamedTuple):
     supernode_target_classes: int
 
 class GNN(nn.Module):
-    def __init__(self,dim_in,embedding_dim = 64,dim_hidden = 64,num_layers = 1):
+    def __init__(self,dim_in,embedding_dim = 64,dim_hidden = 64,num_layers = 1,\
+        transformations_tasklet = [],transformations_map_entry = []):
         super().__init__()
         self.dim_in = dim_in
         self.dim_hidden = dim_hidden
@@ -138,15 +139,31 @@ class GNN(nn.Module):
         self.word_embeddings = nn.Embedding(dim_in, embedding_dim)
         self.map = nn.GRU(self.embedding_dim, dim_hidden,num_layers=num_layers)
         self.memlet = nn.GRU(self.embedding_dim, dim_hidden,num_layers=num_layers)
-        self.lin1 = nn.Linear(dim_hidden+6,dim_hidden+6,bias = True)
-        self.relu = nn.ReLU()
-        self.lin2 = nn.Linear(dim_hidden+6, out_features=2,bias = True)
+        self.num_trans_tasklet = transformations_tasklet
+        self.num_trans_map_entry = transformations_map_entry
+        self.trans_layers_map = []
+        for i in range(transformations_map_entry):
+            operations = []
+            operations.append(nn.Linear(dim_hidden+6,dim_hidden+6,bias = True))
+            operations.append(nn.ReLU())
+            operations.append(nn.Linear(dim_hidden+6, out_features=2,bias = True))
+            nn.init.xavier_uniform_(operations[0].weight)
+            nn.init.xavier_uniform_(operations[2].weight)
+            nn.init.zeros_(operations[0].bias)
+            nn.init.zeros_(operations[2].bias)
+            self.trans_layers_map.append(operations)
+        self.trans_layers_tasklet = []
+        for i in range(transformations_tasklet):
+            operations = []
+            operations.append(nn.Linear(dim_hidden+6,dim_hidden+6,bias = True))
+            operations.append(nn.ReLU())
+            operations.append(nn.Linear(dim_hidden+6, out_features=2,bias = True))
+            nn.init.xavier_uniform_(operations[0].weight)
+            nn.init.xavier_uniform_(operations[2].weight)
+            nn.init.zeros_(operations[0].bias)
+            nn.init.zeros_(operations[2].bias)
+            self.trans_layers_tasklet.append(operations)
         self.gnn_model = create_graph2class_gnn_model(hidden_state_size=dim_hidden+6,embedding_size = dim_hidden+6)
-        nn.init.uniform_(self.lin1.weight)
-        nn.init.uniform_(self.lin2.weight)
-        nn.init.zeros_(self.lin1.bias)
-        nn.init.zeros_(self.lin2.bias)
-        self.__loss = nn.CrossEntropyLoss()
     
     def compute_metada(self,data_points):
         data = []
@@ -155,8 +172,8 @@ class GNN(nn.Module):
             node_information = [self.node_representation(i)[0] for i in G["node_data"]]
             edges = []
             for i in range(len(G["adjacency_lists"][0][0])):
-                a = G["adjacency_lists"][0][0][i].item()
-                b = G["adjacency_lists"][0][1][i].item()
+                a = G["adjacency_lists"][0][0][0][i].item()
+                b = G["adjacency_lists"][0][1][0][i].item()
                 edges.append([a,b])
             graph_data = GraphData(node_information,{"Type1":edges},{})
             data.append(graph_data)
@@ -174,20 +191,20 @@ class GNN(nn.Module):
             return logits
     def node_representation(self,e):
         type_tensor = e["Type"]
-        if e["Type"][0] == 1:
-            data = e['data']
-            data = self.word_embeddings(data).view(len(data),-1 , self.embedding_dim)
+        if e["Type"][0][0] == 1:
+            data = e['attr']
+            data = self.word_embeddings(data).view(len(data[0]),-1 , self.embedding_dim)
             hidden = torch.zeros((self.num_layers,1,self.dim_hidden))
             data, _ = self.map(data, hidden)
-            return torch.cat((type_tensor, data[-1][0])).view(1,-1)
-        elif e["Type"][5] == 1:
-            data = e['data']
-            data = self.word_embeddings(data).view(len(data),-1 , self.embedding_dim)
+            return torch.cat((type_tensor[0], data[-1][0])).view(1,-1)
+        elif e["Type"][0][5] == 1:
+            data = e['attr']
+            data = self.word_embeddings(data).view(len(data[0]),-1 , self.embedding_dim)
             hidden = torch.zeros((self.num_layers,1,self.dim_hidden))
             data, _ = self.memlet(data, hidden)
-            return torch.cat((type_tensor, data[-1][0])).view(1,-1)
+            return torch.cat((type_tensor[0], data[-1][0])).view(1,-1)
         else:
-            return torch.cat((type_tensor, torch.zeros(self.dim_hidden))).view(1,-1)
+            return torch.cat((type_tensor[0], torch.zeros(self.dim_hidden))).view(1,-1)
     
     def compute_node_representations(self,X):
         res = torch.zeros((1,6+self.dim_hidden))
@@ -195,16 +212,28 @@ class GNN(nn.Module):
             res = torch.cat((res,self.node_representation(e)))
         return res[1:]
 
-    def forward(self,X,target_nodes):
-        dic = {"node_data":{"features":self.compute_node_representations(X["node_data"])}}
-        dic["adjacency_lists"] = X["adjacency_lists"]
-        dic["node_to_graph_idx"] = X["node_to_graph_idx"]
-        dic["reference_node_graph_idx"] = X["reference_node_graph_idx"]
-        dic["reference_node_ids"] = X["reference_node_ids"]
-        dic["num_graphs"] = X["num_graphs"]
-        result = self.gnn(**dic)
-        result = result.output_node_representations[target_nodes]
-        result = self.lin1(result)
-        result = self.relu(result)
-        result = self.lin2(result)
-        return result
+    def forward(self,X,target_tasklets,target_map_entry):
+        # dic = {"node_data":{"features":self.compute_node_representations(X["node_data"])}}
+        # dic["adjacency_lists"] = X["adjacency_lists"]
+        # dic["node_to_graph_idx"] = X["node_to_graph_idx"]
+        # dic["reference_node_graph_idx"] = X["reference_node_graph_idx"]
+        # dic["reference_node_ids"] = X["reference_node_ids"]
+        # dic["num_graphs"] = X["num_graphs"]
+        X["node_data"] = {"features":self.compute_node_representations(X["node_data"])}
+        X["node_to_graph_idx"] = X["node_to_graph_idx"][0]
+        X["num_graphs"] = 1
+        X["adjacency_lists"][0] = (X["adjacency_lists"][0][0][0],X["adjacency_lists"][0][1][0])
+        result = self.gnn(**X).output_node_representations
+        res_map = torch.empty(self.num_trans_tasklet,len(target_tasklets), 2)
+
+        for i in range(self.num_trans_tasklet):
+            x = self.trans_layers_tasklet[i][0](result[target_tasklets[0]])
+            x = self.trans_layers_tasklet[i][1](x)
+            x = self.trans_layers_tasklet[i][2](x)
+            res_map[i,:,:] = x[0]
+        for i in range(self.num_trans_map_entry):
+            x = self.trans_layers_map[i][0](result[target_map_entry[0]])
+            x = self.trans_layers_map[i][1](x)
+            x = self.trans_layers_map[i][2](x)
+            res_map[i,:,:] = x[0]
+        return res_map,res_map

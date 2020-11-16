@@ -29,41 +29,54 @@ import sys
 sys.path.append("/Users/benediktschesch/MyEnv")
 from utils import memlet2dic,map2dic
 
-with open("/Users/benediktschesch/MyEnv/temp/Vect_graphs_raw.pkl", "rb") as fp:    
+#Import Graphs
+with open("/Users/benediktschesch/MyEnv/temp/Graphs_raw.pkl", "rb") as fp:    
     raw_data = symbolic.SympyAwareUnpickler(fp).load()
 
-max_params = raw_data["max_params"]
-max_free_symbols = raw_data["max_free_symbols"]
-data_points = raw_data["data"]
+#Intialize parameters
 max_num_map_entry = 0
 max_num_param = 0
-for data in tqdm(data_points):
+
+
+for data in tqdm(raw_data["data"]):
+
+    #Initialization
     G = data["G"]
     params = data["params"]
     free_symbols = data["free_symbols"]
     str_params_dic = {}
     freesymbol_dic = {}
+    num_map_entry = 0
+
+    #Create free symbol dictionary
     for count,sym in enumerate(list(free_symbols)):
         freesymbol_dic[dace.symbol(sym)] = "N"+str(count)
-    num_map_entry = 0
+    
+    #Create Parameter dictionary
     for node in G.nodes(data = True):
-        if node[1]["attr"]["Type"] == "MapEntry":
-            for i in range(node[1]["attr"]["data"]["num_params"]):
-                str_params_dic[node[1]["attr"]["data"]["param"+str(i)]] = "i"+str(num_map_entry)+str(i)
-                freesymbol_dic[dace.symbol(node[1]["attr"]["data"]["param"+str(i)])] = "i"+str(num_map_entry)+str(i)
-            max_num_param = max(max_num_param,node[1]["attr"]["data"]["num_params"])
+        if node[1]["Type"] == "MapEntry":
+            for i in range(node[1]["attr"]["num_params"]):
+                str_params_dic[node[1]["attr"]["param"+str(i)]] = "i"+str(num_map_entry)+str(i)
+                freesymbol_dic[dace.symbol(node[1]["attr"]["param"+str(i)])] = "i"+str(num_map_entry)+str(i)
+            max_num_param = max(max_num_param,node[1]["attr"]["num_params"])
             num_map_entry += 1
     max_num_map_entry = max(max_num_map_entry,num_map_entry)
     
+    #Normalize node data
     for node in G.nodes(data = True):
-        if node[1]["attr"]["Type"] == "MapEntry":
-            node[1]["attr"]["data"] = map2dic(node[1]["attr"]["data"],freesymbol_dic,str_params_dic)
+        if node[1]["Type"] == "MapEntry":
+            node[1]["attr"] = map2dic(node[1]["attr"],freesymbol_dic,str_params_dic)
+    
+    #Normalize node data
     for edge in G.edges(data = True):
         edge[2]['attr'] = memlet2dic(edge[2]['attr'],freesymbol_dic)
+
+    #Remove no longer relevant parameters
     del data["params"]
     del data["free_symbols"]
 
-
-output = {"max_free_symbols":max_free_symbols,"max_params":max_params,"data":data_points,"max_num_map_entry":max_num_map_entry,"max_num_param":max_num_param}
-with open("/Users/benediktschesch/MyEnv/temp/Vect_graphs_normalized.pkl", "wb") as fp:
-    symbolic.SympyAwarePickler(fp).dump(output)
+#Store data
+raw_data["max_num_map_entry"] = max_num_map_entry
+raw_data["max_num_param"] = max_num_param
+with open("/Users/benediktschesch/MyEnv/temp/Graphs_normalized.pkl", "wb") as fp:
+    symbolic.SympyAwarePickler(fp).dump(raw_data)
