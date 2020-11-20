@@ -156,13 +156,13 @@ class GNN(nn.Module):
     def node_representation(self,e):
         type_tensor = e["Type"]
         if e["Type"][0][0] == 1:
-            data = e['attr']
+            data = e['data']
             data = self.word_embeddings(data).view(len(data[0]),-1 , self.embedding_dim)
             hidden = torch.zeros((self.num_layers,1,self.dim_hidden))
             data, _ = self.map(data, hidden)
             return torch.cat((type_tensor[0], data[-1][0])).view(1,-1)
         elif e["Type"][0][5] == 1:
-            data = e['attr']
+            data = e['data']
             data = self.word_embeddings(data).view(len(data[0]),-1 , self.embedding_dim)
             hidden = torch.zeros((self.num_layers,1,self.dim_hidden))
             data, _ = self.memlet(data, hidden)

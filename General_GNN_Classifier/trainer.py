@@ -19,7 +19,7 @@ if torch.cuda.is_available():
   torch.set_default_tensor_type('torch.cuda.FloatTensor')
 else:
   torch.set_default_tensor_type('torch.FloatTensor')
-with open("/Users/benediktschesch/MyEnv/temp/Graph_train_data.pkl", "rb") as fp:   # Unpickling
+with open("/Users/benediktschesch/MyEnv/temp/train_data.pkl", "rb") as fp:   # Unpickling
     raw_data = pickle.load(fp)
 
 

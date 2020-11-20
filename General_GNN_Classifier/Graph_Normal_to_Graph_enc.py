@@ -46,7 +46,7 @@ type_dic["NestedSDFG"] = torch.Tensor([0,0,0,0,1,0])
 type_dic["Memlet"] =     torch.Tensor([0,0,0,0,0,1])
 
 #Open Data
-with open("/Users/benediktschesch/MyEnv/temp/Graphs_normalized.pkl", "rb") as fp:    
+with open("/Users/benediktschesch/MyEnv/temp/Normalized_data.pkl", "rb") as fp:    
     raw_data = symbolic.SympyAwareUnpickler(fp).load()
 
 #Initialize Data
@@ -57,41 +57,50 @@ max_free_symbols = raw_data["max_free_symbols"]
 encoder = Encoder(max_free_symbols,max_num_param,max_num_map_entry)
 data_train, data_test = train_test_split(data_points, test_size=0.2)
 
+tasklets = 0
+map_entries = 0
+transformations_data_task = [[i.__name__,0,0] for i in raw_data["transformations_tasklet"]]
+transformations_data_map = [[i.__name__,0,0] for i in raw_data["transformations_map_entry"]]
+
 def gen_data(data_points):
     X = []
     for data_point in tqdm(data_points):
         encoder.shuffle_sym()
         for i in range(16):
             new_data = copy.deepcopy(data_point)
-            #Initialize Data
-            G = new_data["G"]
-            highest_node_number = 0
-
             #Encode the nodes
-            for node in G.nodes(data = True):
-                if node[1]["Type"] == "MapEntry":
-                    node[1]["attr"] = torch.Tensor(encoder.encode(map2str(node[1]["attr"]))).type(torch.LongTensor)
-                node[1]["Type"] = type_dic[node[1]["Type"]]
-                highest_node_number = max(node[0],highest_node_number)
+            for node in new_data["G"]["node_data"]:
+                if node["Type"] == "MapEntry":
+                    node["data"] = torch.Tensor(encoder.encode(node["data"])).type(torch.LongTensor)
+                if node["Type"] == "Memlet":
+                    node["data"] = torch.Tensor(encoder.encode(node["data"])).type(torch.LongTensor)
+                node["Type"] = type_dic[node["Type"]]
             
-            #Transform edges (Memlets) to nodes and encode them
-            edges_to_add = []
-            node_to_add = []
-            for edge in G.edges(data = True):
-                highest_node_number += 1
-                data = edge[2]
-                dic = {}
-                dic["Type"] = type_dic["Memlet"]
-                dic["attr"] = torch.Tensor(encoder.encode(mem2str(data['attr']))).type(torch.LongTensor)
-                node_to_add += [(highest_node_number,dic)]
-                edges_to_add += [(edge[0],highest_node_number),(highest_node_number,edge[1])]
-                del edge[2]["attr"]
-            G.add_nodes_from(node_to_add)
-            G.add_edges_from(edges_to_add)
-
-            X.append(new_data)
             num_correct = sum(new_data["list_trans_map_entry"][0]["results"])
             total = len(new_data["tasklet"])
+            source = torch.Tensor([e[0] for e in new_data["G"]["adjacency_lists"]]).type(torch.LongTensor)
+            dest =torch.Tensor([e[1] for e in new_data["G"]["adjacency_lists"]]).type(torch.LongTensor)
+            new_data["G"]["adjacency_lists"] = [(source,dest)]
+            new_data["G"]["node_to_graph_idx"] = torch.zeros(len(new_data["G"]["node_data"])).type(torch.LongTensor)
+            new_data["G"]["reference_node_graph_idx"] = {}
+            new_data["G"]["reference_node_ids"] = {}
+            new_data["tasklet"] = torch.Tensor(new_data["tasklet"]).type(torch.LongTensor)
+            new_data["map_entry"] = torch.Tensor(new_data["map_entry"]).type(torch.LongTensor)
+            for dic2 in new_data["list_trans_map_entry"]:
+                dic2["results"] = torch.Tensor(dic2["results"]).type(torch.LongTensor)
+            for dic2 in new_data["list_trans_tasklet"]:
+                dic2["results"] = torch.Tensor(dic2["results"]).type(torch.LongTensor)
+            del new_data["file"]
+            X.append(new_data)
+
+            #Compute statisctics about tasklet transformations
+            for i in range(len(transformations_data_task)):
+                transformations_data_task[i][2] += len(data_point["tasklet"])
+                transformations_data_task[i][1] += sum(data_point["list_trans_tasklet"][i]["results"])
+            #Compute statisctics about map_entry transformations
+            for i in range(len(transformations_data_map)):
+                transformations_data_map[i][2] += len(data_point["map_entry"])
+                transformations_data_map[i][1] += sum(data_point["list_trans_map_entry"][i]["results"])
             if total == 0 or num_correct*1.0/total < 0.3:
                 break
     return X
@@ -100,7 +109,8 @@ def gen_data(data_points):
 raw_data["X_test"] = gen_data(data_train)
 raw_data["X_train"] = gen_data(data_test)
 del raw_data["data"]
-
+raw_data["transformations_data_map"] = transformations_data_map
+raw_data["transformations_data_task"] = transformations_data_task
 raw_data["dim_in"] = len(encoder)
-with open("/Users/benediktschesch/MyEnv/temp/Graphs_embeded.pkl", "wb") as fp:
+with open("/Users/benediktschesch/MyEnv/temp/train_data.pkl", "wb") as fp:
     symbolic.SympyAwarePickler(fp).dump(raw_data)

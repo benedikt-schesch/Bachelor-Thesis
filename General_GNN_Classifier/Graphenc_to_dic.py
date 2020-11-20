@@ -21,15 +21,7 @@ def compute(data_points):
         num_tasklets = 0
         dic = {}
         G = data_point["G"]
-
-        #Compute statisctics about tasklet transformations
-        for i in range(len(transformations_data_task)):
-            transformations_data_task[i][2] += len(data_point["tasklet"])
-            transformations_data_task[i][1] += sum(data_point["list_trans_tasklet"][i]["results"])
-        #Compute statisctics about map_entry transformations
-        for i in range(len(transformations_data_map)):
-            transformations_data_map[i][2] += len(data_point["map_entry"])
-            transformations_data_map[i][1] += sum(data_point["list_trans_map_entry"][i]["results"])
+    
 
         for dic2 in data_point["list_trans_map_entry"]:
             dic2["results"] = torch.Tensor(dic2["results"]).type(torch.LongTensor)

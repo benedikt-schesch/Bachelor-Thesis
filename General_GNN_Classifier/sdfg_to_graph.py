@@ -2,6 +2,7 @@
 #Find all the SDFGs in our computer, extract them and convert them to a networkx structure
 #
 from aenum import convert
+from numpy.lib.arraysetops import isin
 import dace
 import dace.subsets
 from dace.transformation.dataflow import vectorization
@@ -35,7 +36,7 @@ from tqdm import tqdm
 from pathlib import Path
 import sys
 sys.path.append("/Users/benediktschesch/MyEnv")
-from utils import extract_map,extract_memlet
+from utils import extract_map,extract_memlet,memlet2dic,map2dic,mem2str,map2str
 
 #Compute and store paths in which an SDFG is present
 def compute_paths():
@@ -54,13 +55,15 @@ if not my_file.is_file():
     compute_paths()
 with open("/Users/benediktschesch/MyEnv/temp/sdfg_paths.pkl", "rb") as fp:
     paths = pickle.load(fp)
-#paths = paths[0:10]
+paths = paths[0:10]
 
 #Metadata Initialization
 count = 0
 data_points = []
 max_free_symbols = 0
 max_params = 0
+max_num_map_entry = 0
+max_num_param = 0
 
 #Define transformations to analyze
 transformations_tasklet = []
@@ -77,7 +80,7 @@ for file in tqdm(paths):
     
     #Itterate over all SDFGS
     for sdfg in [file_sdfg]:#file_sdfg.all_sdfgs_recursive():
-        sdfg.apply_transformations_repeated(MapExpansion)
+        #sdfg.apply_transformations_repeated(MapExpansion)
         
         opt = Optimizer(sdfg)
         
@@ -89,12 +92,18 @@ for file in tqdm(paths):
             #Initialize Metadata
             free_symbols = set({})
             params = set({})
-            nodes = []
-            node_to_idx = {}
-            G = nx.DiGraph()
+            nodes = state.nodes()
+            nodes_str = []
             valid = False
             map_entry = []
             tasklet = []
+            count = 0
+            dic_node = {}
+            adj_list = []
+            str_params_dic = {}
+            freesymbol_dic = {}
+            num_map_entry = 0
+
 
             list_trans_map_entry = [{"results":[],"nodes": \
                 [i.query_node(sdfg.sdfg_list[i.sdfg_id],i._second_map_entry) for i in \
@@ -106,50 +115,58 @@ for file in tqdm(paths):
                         trans in transformations_tasklet]
 
             
-
-            #Create Graph in networkx
-            for count,node in enumerate(state.nodes()):
-                nodes += [(count,{"attr": node})]
-                node_to_idx[node] = count
-            G.add_nodes_from(nodes)
+            for node in state.nodes():
+                free_symbols.update(node.free_symbols)
+                dic_node[node] = count
+                adj_list += [(count,count)]
+                count += 1
+                if isinstance(node,MapEntry):
+                    params.update(node.params)
+                    for i,param in enumerate(node.params):
+                        str_params_dic[param] = "i"+str(num_map_entry)+str(i)
+                        freesymbol_dic[dace.symbol(param)] = "i"+str(num_map_entry)+str(i)
+                    max_num_param = max(max_num_param,len(node.params))
+                    num_map_entry += 1
+            free_symbols = free_symbols.difference(params)
             for edge in state.edges():
-                G.add_edge(node_to_idx[edge._src],node_to_idx[edge._dst],attr = edge)
-            
-            #Extract Memlet data
-            for edge in G.edges(data = True):
-                free_symbols.update(edge[2]['attr'].data.free_symbols)
-                edge[2]['attr'] = extract_memlet(edge[2]['attr'])
-            
-            #Extract Node data and Transformation
-            for node in G.nodes(data = True):
-                free_symbols.update(node[1]["attr"].free_symbols)
-                node[1]["Type"] = type(node[1]["attr"]).__name__
-                if isinstance(node[1]["attr"],MapEntry):
-                    map_entry.append(node[0])
-                    if has_dynamic_map_inputs(state,node[1]["attr"]):
+                u = dic_node[edge._src]
+                v = dic_node[edge._dst]
+                adj_list += [elem for elem in [(u,v),(v,u),(u,count),(v,count),(count,u),(count,v)] if elem not in adj_list]
+                nodes.append(edge)
+                count += 1
+
+            #Create free symbol dictionary
+            for count,sym in enumerate(list(free_symbols)):
+                if sym not in freesymbol_dic:
+                    freesymbol_dic[dace.symbol(sym)] = "N"+str(count)
+
+            for node in nodes:
+                if isinstance(node,MapEntry):
+                    map_entry.append(dic_node[node])
+                    if has_dynamic_map_inputs(state,node):
                         valid = False
                         break
                     valid = True
                     for dic in list_trans_map_entry:
-                        if node[1]["attr"] in dic["nodes"]:
+                        if node in dic["nodes"]:
                             dic["results"].append(1)
                         else:
                             dic["results"].append(0)
-                    params.update(node[1]["attr"].params)
-                    node[1]["attr"] = extract_map(node[1]["attr"])
-                elif isinstance(node[1]["attr"],Tasklet):
-                    tasklet.append(node[0])
-                    valid = True #Unmark if tasklet transformation is present
+                    nodes_str.append({"Type":"MapEntry","data":map2str(map2dic(extract_map(node),freesymbol_dic,str_params_dic))})
+                elif isinstance(node,Tasklet):
+                    tasklet.append(dic_node[node])
+                    valid = True
                     for dic in list_trans_tasklet:
-                        if node[1]["attr"] in dic["nodes"]:
+                        if node in dic["nodes"]:
                             dic["results"].append(1)
                         else:
                             dic["results"].append(0)
-                    del node[1]["attr"]
-                elif isinstance(node[1]["attr"],(MapExit,NestedSDFG,AccessNode)):
-                    del node[1]["attr"]
-                    continue
-                elif isinstance(node[1]["attr"],ConsumeEntry) or isinstance(node[1]["attr"],ConsumeExit):
+                    nodes_str.append({"Type":type(node).__name__})
+                elif isinstance(node,MultiConnectorEdge):
+                    nodes_str.append({"Type":"Memlet","data":mem2str(memlet2dic(extract_memlet(node),freesymbol_dic))})
+                elif isinstance(node,(MapExit,NestedSDFG,AccessNode)):
+                    nodes_str.append({"Type":type(node).__name__})
+                elif isinstance(node,ConsumeEntry) or isinstance(node,ConsumeExit):
                     valid = False
                     break
                 else:
@@ -165,15 +182,17 @@ for file in tqdm(paths):
 
             #Add graph if valid
             if valid:
-                max_free_symbols = max(max_free_symbols,len(free_symbols.difference(params)))
-                data_points.append({"G":G,"free_symbols":free_symbols.difference(params),\
-                    "params":params,"file": file,"list_trans_map_entry":list_trans_map_entry,\
+                max_free_symbols = max(max_free_symbols,len(free_symbols))
+                data_points.append({"G":{"adjacency_lists":adj_list,"node_data":nodes_str},"file": file,
+                    "list_trans_map_entry": list_trans_map_entry,\
                     "list_trans_tasklet":list_trans_tasklet,"tasklet":tasklet,"map_entry":map_entry})
-                max_params = max(len(params),max_params)
+                max_num_param = max(len(params),max_num_param)
+                max_num_map_entry = max(max_num_map_entry,num_map_entry)
 
 
 #Store output
-output = {"max_free_symbols":max_free_symbols,"max_params":max_params,"data":data_points, \
+output = {"data":data_points,"max_num_param":max_num_param,"max_free_symbols":max_free_symbols, \
+    "max_num_map_entry": max_num_map_entry,\
     "transformations_map_entry": transformations_map_entry, "transformations_tasklet":transformations_tasklet}
-with open("/Users/benediktschesch/MyEnv/temp/Graphs_raw.pkl", "wb") as fp:
+with open("/Users/benediktschesch/MyEnv/temp/Normalized_data.pkl", "wb") as fp:
     symbolic.SympyAwarePickler(fp).dump(output)
