@@ -55,7 +55,7 @@ if not my_file.is_file():
     compute_paths()
 with open("/Users/benediktschesch/MyEnv/temp/sdfg_paths.pkl", "rb") as fp:
     paths = pickle.load(fp)
-paths = paths[0:10]
+#paths = paths[0:10]
 
 #Metadata Initialization
 count = 0
@@ -69,6 +69,12 @@ max_num_param = 0
 transformations_tasklet = []
 transformations_map_entry = [MapFusion]
 
+type_dic = {}
+type_dic[MultiConnectorEdge] = 1
+type_dic[AccessNode] = 2
+type_dic[MapEntry] = 3
+type_dic[MapExit] = 4
+type_dic[NestedSDFG] = 5
 
 #Itterate over all files
 for file in tqdm(paths):
@@ -99,7 +105,7 @@ for file in tqdm(paths):
             tasklet = []
             count = 0
             dic_node = {}
-            adj_list = []
+            adj_lists = [[],[],[],[],[],[]]
             str_params_dic = {}
             freesymbol_dic = {}
             num_map_entry = 0
@@ -118,7 +124,7 @@ for file in tqdm(paths):
             for node in state.nodes():
                 free_symbols.update(node.free_symbols)
                 dic_node[node] = count
-                adj_list += [(count,count)]
+                adj_lists[0] += [(count,count)]
                 count += 1
                 if isinstance(node,MapEntry):
                     params.update(node.params)
@@ -129,9 +135,15 @@ for file in tqdm(paths):
                     num_map_entry += 1
             free_symbols = free_symbols.difference(params)
             for edge in state.edges():
-                u = dic_node[edge._src]
-                v = dic_node[edge._dst]
-                adj_list += [elem for elem in [(u,v),(v,u),(u,count),(v,count),(count,u),(count,v)] if elem not in adj_list]
+                u = edge._src
+                v = edge._dst
+                adj_lists[0] += (count,count)
+                dic_node[edge] = count
+                if type(u) not in type_dic or type(v) not in type_dic:
+                    break
+                for (a,b) in [(u,v),(v,u),(u,edge),(v,edge),(edge,u),(edge,v)]:
+                    if (dic_node[a],dic_node[b]) not in adj_lists[type_dic[type(edge._src)]]:
+                        adj_lists[type_dic[type(edge._src)]].append((dic_node[a],dic_node[b]))
                 nodes.append(edge)
                 count += 1
 
@@ -183,7 +195,7 @@ for file in tqdm(paths):
             #Add graph if valid
             if valid:
                 max_free_symbols = max(max_free_symbols,len(free_symbols))
-                data_points.append({"G":{"adjacency_lists":adj_list,"node_data":nodes_str},"file": file,
+                data_points.append({"G":{"adjacency_lists":adj_lists,"node_data":nodes_str},"file": file,
                     "list_trans_map_entry": list_trans_map_entry,\
                     "list_trans_tasklet":list_trans_tasklet,"tasklet":tasklet,"map_entry":map_entry})
                 max_num_param = max(len(params),max_num_param)

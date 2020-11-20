@@ -78,9 +78,8 @@ def gen_data(data_points):
             
             num_correct = sum(new_data["list_trans_map_entry"][0]["results"])
             total = len(new_data["tasklet"])
-            source = torch.Tensor([e[0] for e in new_data["G"]["adjacency_lists"]]).type(torch.LongTensor)
-            dest =torch.Tensor([e[1] for e in new_data["G"]["adjacency_lists"]]).type(torch.LongTensor)
-            new_data["G"]["adjacency_lists"] = [(source,dest)]
+            
+            new_data["G"]["adjacency_lists"] = [torch.Tensor(arr).type(torch.LongTensor).view(2,-1) for arr in new_data["G"]["adjacency_lists"]]
             new_data["G"]["node_to_graph_idx"] = torch.zeros(len(new_data["G"]["node_data"])).type(torch.LongTensor)
             new_data["G"]["reference_node_graph_idx"] = {}
             new_data["G"]["reference_node_ids"] = {}

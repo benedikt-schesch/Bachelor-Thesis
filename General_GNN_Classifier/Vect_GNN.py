@@ -86,8 +86,8 @@ def create_graph2class_gnn_model(hidden_state_size: int = 2, embedding_size = 2,
             message_passing_layer_creator=create_mlp_mp_layers,
             max_nodes_per_graph=100000,
             max_graph_edges=500000,
-            introduce_backwards_edges=True,
-            add_self_edges=True,
+            introduce_backwards_edges=False,
+            add_self_edges=False,
             stop_extending_minibatch_after_num_nodes=120000,
         )
 
@@ -134,12 +134,15 @@ class GNN(nn.Module):
         for data_point in data_points:
             G = data_point["G"]
             node_information = [self.node_representation(i)[0] for i in G["node_data"]]
-            edges = []
-            for i in range(len(G["adjacency_lists"][0][0][0])):
-                a = G["adjacency_lists"][0][0][0][i].item()
-                b = G["adjacency_lists"][0][1][0][i].item()
-                edges.append([a,b])
-            graph_data = GraphData(node_information,{"Type1":edges},{})
+            dic = {}
+            for j in range(len(range(len(G["adjacency_lists"])))):
+                edges = []
+                for i in range(G["adjacency_lists"][j][0].shape[1]):
+                    a = G["adjacency_lists"][j][0][0][i].item()
+                    b = G["adjacency_lists"][j][0][1][i].item()
+                    edges.append([a,b])
+                dic["Type"+str(j)] = edges
+            graph_data = GraphData(node_information,dic,{})
             data.append(graph_data)
         self.gnn_model.compute_metadata(data)
         self.gnn = self.gnn_model.build_neural_module()
@@ -180,7 +183,9 @@ class GNN(nn.Module):
         X["node_data"] = {"features":self.compute_node_representations(X["node_data"])}
         X["node_to_graph_idx"] = X["node_to_graph_idx"][0]
         X["num_graphs"] = 1
-        X["adjacency_lists"][0] = (X["adjacency_lists"][0][0][0],X["adjacency_lists"][0][1][0])
+        for i in range(len(X["adjacency_lists"])):
+            X["adjacency_lists"][i] = X["adjacency_lists"][i][0]
+        #X["adjacency_lists"][0] = (X["adjacency_lists"][0][0][0],X["adjacency_lists"][0][1][0])
         result = self.gnn(**X).output_node_representations
         res_task = torch.empty(self.num_trans_tasklet,target_tasklets.nelement(), 2)
         res_map = torch.empty(self.num_trans_map_entry,target_map_entry.nelement(), 2)
