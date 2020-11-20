@@ -5,6 +5,7 @@ from dace.transformation.dataflow import vectorization
 import numpy as np
 import os, glob
 import tensorflow as tf
+import copy
 from tensorflow import keras
 from sklearn.model_selection import train_test_split
 import random
@@ -49,35 +50,51 @@ max_num_param = raw_data["max_num_param"]
 data_points = raw_data["data"]
 max_free_symbols = raw_data["max_free_symbols"]
 encoder = Encoder(max_free_symbols,max_num_param,max_num_map_entry)
+data_train, data_test = train_test_split(data_points, test_size=0.2)
+
+def gen_data(data_points):
+    X = []
+    for data_point in tqdm(data_points):
+        encoder.shuffle_sym()
+        for i in range(16):
+            new_data = copy.deepcopy(data_point)
+            #Initialize Data
+            G = new_data["G"]
+            highest_node_number = 0
+
+            #Encode the nodes
+            for node in G.nodes(data = True):
+                if node[1]["Type"] == "MapEntry":
+                    node[1]["attr"] = torch.Tensor(encoder.encode(map2str(node[1]["attr"]))).type(torch.LongTensor)
+                node[1]["Type"] = type_dic[node[1]["Type"]]
+                highest_node_number = max(node[0],highest_node_number)
+            
+            #Transform edges (Memlets) to nodes and encode them
+            edges_to_add = []
+            node_to_add = []
+            for edge in G.edges(data = True):
+                highest_node_number += 1
+                data = edge[2]
+                dic = {}
+                dic["Type"] = type_dic["Memlet"]
+                dic["attr"] = torch.Tensor(encoder.encode(mem2str(data['attr']))).type(torch.LongTensor)
+                node_to_add += [(highest_node_number,dic)]
+                edges_to_add += [(edge[0],highest_node_number),(highest_node_number,edge[1])]
+                del edge[2]["attr"]
+            G.add_nodes_from(node_to_add)
+            G.add_edges_from(edges_to_add)
+
+            X.append(new_data)
+            num_correct = sum(new_data["list_trans_map_entry"][0]["results"])
+            total = len(new_data["tasklet"])
+            if total == 0 or num_correct*1.0/total < 0.3:
+                break
+    return X
 
 
-for data_point in tqdm(data_points):
-
-    #Initialize Data
-    G = data_point["G"]
-    highest_node_number = 0
-
-    #Encode the nodes
-    for node in G.nodes(data = True):
-        if node[1]["Type"] == "MapEntry":
-            node[1]["attr"] = torch.Tensor(encoder.encode(map2str(node[1]["attr"]))).type(torch.LongTensor)
-        node[1]["Type"] = type_dic[node[1]["Type"]]
-        highest_node_number = max(node[0],highest_node_number)
-    
-    #Transform edges (Memlets) to nodes and encode them
-    edges_to_add = []
-    node_to_add = []
-    for edge in G.edges(data = True):
-        highest_node_number += 1
-        data = edge[2]
-        dic = {}
-        dic["Type"] = type_dic["Memlet"]
-        dic["attr"] = torch.Tensor(encoder.encode(mem2str(data['attr']))).type(torch.LongTensor)
-        node_to_add += [(highest_node_number,dic)]
-        edges_to_add += [(edge[0],highest_node_number),(highest_node_number,edge[1])]
-        del edge[2]["attr"]
-    G.add_nodes_from(node_to_add)
-    G.add_edges_from(edges_to_add)
+raw_data["X_test"] = gen_data(data_train)
+raw_data["X_train"] = gen_data(data_test)
+del raw_data["data"]
 
 raw_data["dim_in"] = len(encoder)
 with open("/Users/benediktschesch/MyEnv/temp/Graphs_embeded.pkl", "wb") as fp:

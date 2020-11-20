@@ -17,7 +17,7 @@ import pickle
 from tqdm import tqdm
 import sys
 sys.path.append("/Users/benediktschesch/MyEnv/Vectorization_GNN")
-from Vect_GNN import GNN,create_graph2class_gnn_model
+from Vect_GNN import GNN
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 if torch.cuda.is_available():
@@ -29,71 +29,72 @@ with open("/Users/benediktschesch/MyEnv/temp/Graph_train_data.pkl", "rb") as fp:
 
 
 max_vocab = raw_data["dim_in"]
-X = raw_data["data"]
 trans_map_entry = raw_data["transformations_map_entry"]
 trans_tasklet = raw_data["transformations_tasklet"]
 
-X_train,X_test = train_test_split(X, test_size=0.2)
+X_train = raw_data["X_train"]
+X_test = raw_data["X_test"]
+
 print("Device: ",device)
-print("Number of graphs: {}".format(len(X)))
 print("Number of training graphs: {}".format(len(X_train)))
 print("Number of validation graphs: {}".format(len(X_test)))
 for i in raw_data["transformations_data_map"]:
-    print("Transformation: ",i[0]," Number of Training Points: ",i[1]," Positive Rate: ",i[1]*100.0/i[2],"%")
+    print("Transformation: ",i[0]," Number of Training Points: ",i[2]," Positive Rate: ",i[1]*100.0/i[2],"%")
 for i in raw_data["transformations_data_task"]:
-    print("Transformation: ",i[0]," Number of Training Points: ",i[1]," Positive Rate: ",i[1]*100.0/i[2],"%")
+    print("Transformation: ",i[0]," Number of Training Points: ",i[2]," Positive Rate: ",i[1]*100.0/i[2],"%")
 
 
-class my_dataset(Dataset):
-    def __init__(self,data):
-        self.data=data
-    def __getitem__(self, index):
-        return self.data[index]
-    def __len__(self):
-        return len(self.data)
 
 
-def predictions(loader,model):
-    correct_result = 0
-    total = 0.0
+def predictions(loader,model,trans_map_entry,trans_tasklet):
+    stats = [[0,0] for i in trans_tasklet]
+    stats1 = [[0,0] for i in trans_map_entry]
     with torch.no_grad():
         for x in loader:
             graph = x["G"]
             tasklet,map_entry = model(graph,x["tasklet"],x["map_entry"])
+            correct_result = 0
+            total = 0.0
             for i in range(len(x["list_trans_tasklet"])):
-                for i in range(len(tasklet)):
-                    total+=1
-                    if torch.argmax(tasklet[i]) == x["list_trans_tasklet"][i]["results"][0]:
-                        correct_result +=1
+                for j in range(len(tasklet[0])):
+                    stats[i][0] += 1
+                    if torch.argmax(tasklet[0][j]) == x["list_trans_tasklet"][i]["results"][0][j]:
+                        stats[i][1] += 1
             for i in range(len(x["list_trans_map_entry"])):
-                for i in range(len(tasklet)):
-                    total+=1
-                    if torch.argmax(map_entry[i]) == x["list_trans_map_entry"][i]["results"][0]:
-                        correct_result +=1
-    return 1.0*correct_result/(1.0*total)
+                correct_result = 0
+                total = 0.0
+                for j in range(len(map_entry[0])):
+                    stats1[i][0] +=1
+                    if torch.argmax(map_entry[0][j]) == x["list_trans_map_entry"][i]["results"][0][j]:
+                        stats1[i][1] +=1
 
-datasettrain = my_dataset(X_train)
+    for i in range(len(stats)):
+        print("Transformation: ",trans_tasklet[i].__name__," Accuracy:",\
+                        "{:.3f}".format(stats[i][1]/stats[i][0]))
+    for i in range(len(stats1)):
+        print("Transformation: ",trans_map_entry[i].__name__," Accuracy:",\
+                        "{:.3f}".format(stats1[i][1]/stats1[i][0]))
+
 trainloader = DataLoader(X_train,batch_size=1)
-datasettest = my_dataset(X_test)
 testloader = DataLoader(X_test,batch_size=1)
 
-model = GNN(dim_in = max_vocab,dim_hidden = 100,embedding_dim = 100,num_layers = 1,\
+model = GNN(dim_in = max_vocab,dim_hidden = 200,embedding_dim = 200,num_layers = 2,\
     transformations_tasklet = len(raw_data["transformations_tasklet"]),\
     transformations_map_entry = len(raw_data["transformations_map_entry"]))
-model.compute_metada(DataLoader(X,batch_size=1))
-optimizer = optim.SGD(model.parameters(), lr=0.0005)
+model.compute_metada(trainloader)
+optimizer = optim.Adam(model.parameters(), lr=0.00008)
 criterion = nn.CrossEntropyLoss()
 epochs = 50
 
 def adjust_optim(optimizer, epoch):
     if epoch < 15:
-        optimizer.param_groups[0]['lr'] = 0.0005
+        optimizer.param_groups[0]['lr'] = 0.00008
     elif epoch < 25:
-        optimizer.param_groups[0]['lr'] = 0.0001
-    elif epoch < 35:  
         optimizer.param_groups[0]['lr'] = 0.00003
-    elif epoch < 50:  
+    elif epoch < 35:  
         optimizer.param_groups[0]['lr'] = 0.00001
+    elif epoch < 50:  
+        optimizer.param_groups[0]['lr'] = 0.000005
 
 
 for e in range(epochs):
@@ -106,24 +107,28 @@ for e in range(epochs):
         tasklet,map_entry = model(graph,x["tasklet"],x["map_entry"])
         loss = 0
         for i in range(len(x["list_trans_tasklet"])):
-            points += len(x["tasklet"])
+            points += x["tasklet"].nelement()
             loss += criterion(tasklet[i],x["list_trans_tasklet"][i]["results"][0])
         for i in range(len(x["list_trans_map_entry"])):
-            points += len(x["tasklet"])
+            points += x["map_entry"].nelement()
             loss += criterion(map_entry[i],x["list_trans_map_entry"][i]["results"][0])
 
-        # backward propagation
-        loss.backward()
-        # update the gradient to new gradients
-        optimizer.step()
         if math.isnan(loss.item()):
             continue
+        loss.backward()
+        optimizer.step()
         running_loss += loss.item()
         assert not math.isnan(running_loss)
-    print("Epoch: {}/{} Training loss: {} Validation accuracy: {} Training accuracy: {}".format(e,(epochs-1),\
-        "%.3f" % (running_loss/points),"%.3f" % predictions(testloader,model),\
-        "%.3f" % predictions(trainloader,model)))
-    #adjust_optim(optimizer,e)
-
-print("Training accuracy:"+str(predictions(X_train,model)))
-print("Validation accuracy:"+str(predictions(X_test,model)))
+    print("Epoch: {}/{} Training loss: {}".format(e+1,epochs,"{:.4f}".format(running_loss/points)))
+    if e % 4 == 0:
+        print("====================================================")
+        print("Test set:")
+        predictions(testloader,model,trans_map_entry,trans_tasklet)
+        print("Training set:")
+        predictions(trainloader,model,trans_map_entry,trans_tasklet)
+        print("====================================================")
+    adjust_optim(optimizer,e)
+print("Training accuracy:")
+predictions(trainloader,model,trans_map_entry,trans_tasklet)
+print("Validation accuracy:")
+predictions(testloader,model,trans_map_entry,trans_tasklet)

@@ -71,6 +71,7 @@ for data in tqdm(raw_data["data"]):
     for edge in G.edges(data = True):
         edge[2]['attr'] = memlet2dic(edge[2]['attr'],freesymbol_dic)
 
+
     #Remove no longer relevant parameters
     del data["params"]
     del data["free_symbols"]

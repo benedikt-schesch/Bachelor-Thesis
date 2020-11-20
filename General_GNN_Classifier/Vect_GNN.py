@@ -171,7 +171,7 @@ class GNN(nn.Module):
             G = data_point["G"]
             node_information = [self.node_representation(i)[0] for i in G["node_data"]]
             edges = []
-            for i in range(len(G["adjacency_lists"][0][0])):
+            for i in range(len(G["adjacency_lists"][0][0][0])):
                 a = G["adjacency_lists"][0][0][0][i].item()
                 b = G["adjacency_lists"][0][1][0][i].item()
                 edges.append([a,b])
@@ -224,16 +224,21 @@ class GNN(nn.Module):
         X["num_graphs"] = 1
         X["adjacency_lists"][0] = (X["adjacency_lists"][0][0][0],X["adjacency_lists"][0][1][0])
         result = self.gnn(**X).output_node_representations
-        res_map = torch.empty(self.num_trans_tasklet,len(target_tasklets), 2)
+        res_task = torch.empty(self.num_trans_tasklet,target_tasklets.nelement(), 2)
+        res_map = torch.empty(self.num_trans_map_entry,target_map_entry.nelement(), 2)
 
         for i in range(self.num_trans_tasklet):
+            if target_tasklets.nelement() == 0:
+                break
             x = self.trans_layers_tasklet[i][0](result[target_tasklets[0]])
             x = self.trans_layers_tasklet[i][1](x)
             x = self.trans_layers_tasklet[i][2](x)
-            res_map[i,:,:] = x[0]
+            res_task[i,:,:] = x[0]
         for i in range(self.num_trans_map_entry):
+            if target_map_entry.nelement() == 0:
+                break
             x = self.trans_layers_map[i][0](result[target_map_entry[0]])
             x = self.trans_layers_map[i][1](x)
             x = self.trans_layers_map[i][2](x)
             res_map[i,:,:] = x[0]
-        return res_map,res_map
+        return res_task,res_map

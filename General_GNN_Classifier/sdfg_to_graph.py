@@ -6,7 +6,7 @@ import numpy as np
 import os, glob
 import tensorflow as tf
 from tensorflow import keras
-import matplotlib as plt
+import matplotlib.pyplot as plt
 import networkx as nx
 from networkx.algorithms import isomorphism as iso
 from typing import Dict, Iterator, List, Tuple, Type, Union
@@ -23,7 +23,7 @@ import pickle
 from dace.sdfg.graph import MultiConnectorEdge
 from dace.sdfg.nodes import AccessNode, MapEntry, MapExit, NestedSDFG, Tasklet, ConsumeEntry,ConsumeExit
 from dace.transformation.optimizer import Optimizer
-from dace.transformation.dataflow import Vectorization
+from dace.transformation.dataflow import Vectorization, MapTiling, DoubleBuffering, MapFusion
 from dace.sdfg.state import SDFGState
 from dace.sdfg import has_dynamic_map_inputs
 from dace import (data as dt, memlet as mm, subsets as sbs, dtypes, properties,
@@ -60,8 +60,8 @@ max_free_symbols = 0
 max_params = 0
 
 #Define transformations to analyze
-transformations_tasklet = [Vectorization,Vectorization]
-transformations_map_entry = []
+transformations_tasklet = []
+transformations_map_entry = [MapFusion]
 
 
 #Itterate over all files
@@ -73,7 +73,7 @@ for file in tqdm(paths):
         continue
     
     #Itterate over all SDFGS
-    for sdfg in file_sdfg.all_sdfgs_recursive():
+    for sdfg in [file_sdfg]:#file_sdfg.all_sdfgs_recursive():
         opt = Optimizer(sdfg)
         
         #Itterate over all states
@@ -86,15 +86,13 @@ for file in tqdm(paths):
             params = set({})
             nodes = []
             node_to_idx = {}
-            G = nx.Graph()
+            G = nx.DiGraph()
             valid = False
             map_entry = []
             tasklet = []
-        
-            #Compute possible transformation points
 
             list_trans_map_entry = [{"results":[],"nodes": \
-                [i.query_node(sdfg.sdfg_list[i.sdfg_id],i._tasklet) for i in \
+                [i.query_node(sdfg.sdfg_list[i.sdfg_id],i._second_map_entry) for i in \
                     opt.get_pattern_matches(patterns=[trans])]} for \
                         trans in transformations_map_entry]
             list_trans_tasklet = [{"results":[],"nodes": \
@@ -126,7 +124,7 @@ for file in tqdm(paths):
                     if has_dynamic_map_inputs(state,node[1]["attr"]):
                         valid = False
                         break
-                    #valid = True #Unmark if map entry transformation is present
+                    valid = True
                     for dic in list_trans_map_entry:
                         if node[1]["attr"] in dic["nodes"]:
                             dic["results"].append(1)
@@ -154,12 +152,12 @@ for file in tqdm(paths):
                     print("Uknown type of node: ",node)
                     break
                 
-            #Compute possible transformation points
+            #Delete useless data
             for trans in list_trans_tasklet:
                 del trans["nodes"]
             for trans in list_trans_map_entry:
                 del trans["nodes"]
-            
+
             #Add graph if valid
             if valid:
                 max_free_symbols = max(max_free_symbols,len(free_symbols.difference(params)))
@@ -167,6 +165,8 @@ for file in tqdm(paths):
                     "params":params,"file": file,"list_trans_map_entry":list_trans_map_entry,\
                     "list_trans_tasklet":list_trans_tasklet,"tasklet":tasklet,"map_entry":map_entry})
                 max_params = max(len(params),max_params)
+
+
 #Store output
 output = {"max_free_symbols":max_free_symbols,"max_params":max_params,"data":data_points, \
     "transformations_map_entry": transformations_map_entry, "transformations_tasklet":transformations_tasklet}
