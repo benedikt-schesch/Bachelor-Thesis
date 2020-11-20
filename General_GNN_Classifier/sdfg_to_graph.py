@@ -1,3 +1,6 @@
+#
+#Find all the SDFGs in our computer, extract them and convert them to a networkx structure
+#
 from aenum import convert
 import dace
 import dace.subsets
@@ -74,6 +77,8 @@ for file in tqdm(paths):
     
     #Itterate over all SDFGS
     for sdfg in [file_sdfg]:#file_sdfg.all_sdfgs_recursive():
+        sdfg.apply_transformations_repeated(MapExpansion)
+        
         opt = Optimizer(sdfg)
         
         #Itterate over all states

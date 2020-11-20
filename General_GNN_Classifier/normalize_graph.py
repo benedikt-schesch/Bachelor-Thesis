@@ -1,3 +1,9 @@
+#
+#We normalize the graph
+#This means the params are mapped to i00, i01, ... ,i10 ,i11, ....
+#The free symbols are mapped towards N00,N01,N02,N03...
+#
+
 from aenum import convert
 import dace
 import dace.subsets

@@ -1,17 +1,12 @@
-import random
-from pathlib import Path
-from typing_extensions import TypedDict
+#
+#This file takes the training/test data and trains our model defined in Vect_GNN.py
+#
 import torch
-from docopt import docopt
-from dpu_utils.utils import RichPath, run_and_debug
 import math
 import networkx as nx
-import copy
-import numpy as np
-from sklearn.model_selection import train_test_split
 import torch.nn as nn
 import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 from torch import Tensor, optim
 import pickle
 from tqdm import tqdm

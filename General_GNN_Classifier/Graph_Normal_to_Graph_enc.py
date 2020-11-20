@@ -1,3 +1,8 @@
+#
+#We take the normal form of the graph and encode and tokenize it
+#Data augmentation techniques have been added
+#
+
 from aenum import convert
 import dace
 import dace.subsets

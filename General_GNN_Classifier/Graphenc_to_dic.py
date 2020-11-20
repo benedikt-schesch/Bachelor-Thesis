@@ -1,7 +1,7 @@
-from torch import sort, take
-from torch.utils import data
-from dace import (data as dt, memlet as mm, subsets as sbs, dtypes, properties,
-                  symbolic)
+#
+#We take the final encoding our graph and tensorize it such that ptgnn can read it
+#
+from dace import symbolic
 from tqdm import tqdm
 import torch
 import networkx as nx

@@ -1,36 +1,15 @@
-import random
-from pathlib import Path
-from torch.utils import data
-from typing_extensions import TypedDict
+#
+# This file defines the GNN structure
+#
 import torch
-from docopt import docopt
-from dpu_utils.utils import RichPath, run_and_debug
 from ptgnn.neuralmodels.gnn import GnnOutput, GraphData
-import networkx as nx
-from ptgnn.baseneuralmodel.trainer import AbstractScheduler
-import tqdm
-from ptgnn.baseneuralmodel import ModelTrainer
-from ptgnn.baseneuralmodel.utils.amlutils import configure_logging, log_run
-from ptgnn.baseneuralmodel.utils.data import LazyDataIterable
-from ptgnn.neuralmodels.embeddings.linearmapembedding import (
-    FeatureRepresentationModel,
-)
+from ptgnn.neuralmodels.embeddings.linearmapembedding import FeatureRepresentationModel
 from ptgnn.neuralmodels.gnn import GraphNeuralNetworkModel
 from ptgnn.neuralmodels.gnn.messagepassing import GatedMessagePassingLayer, MlpMessagePassingLayer
 from ptgnn.neuralmodels.gnn.messagepassing.residuallayers import ConcatResidualLayer
-
-from typing import Any, Counter, Dict, Iterator, List, NamedTuple, Optional, Tuple, Union
-from typing_extensions import TypedDict
-
-import numpy as np
 import torch
-from dpu_utils.mlutils import Vocabulary
 from torch import nn
-
-from ptgnn.baseneuralmodel import AbstractNeuralModel, ModuleWithMetrics
-from ptgnn.baseneuralmodel.utils.data import enforce_not_None
-from ptgnn.neuralmodels.gnn import GnnOutput, GraphData, TensorizedGraphData
-from ptgnn.neuralmodels.gnn.graphneuralnetwork import GraphNeuralNetwork, GraphNeuralNetworkModel
+from ptgnn.neuralmodels.gnn.graphneuralnetwork import GraphNeuralNetworkModel
 import networkx as nx
 
 
@@ -112,21 +91,6 @@ def create_graph2class_gnn_model(hidden_state_size: int = 2, embedding_size = 2,
             stop_extending_minibatch_after_num_nodes=120000,
         )
 
-XGraph = TypedDict(
-    "XGraph",
-    {
-        "nodes": nx.classes.reportviews.NodeView,
-        "edges": nx.classes.reportviews.EdgeView,
-        "result": int,
-    },
-)
-
-Prediction = Tuple[XGraph, Dict[int,int]]
-
-
-class TensorizedGraph2ClassSample(NamedTuple):
-    graph: XGraph
-    supernode_target_classes: int
 
 class GNN(nn.Module):
     def __init__(self,dim_in,embedding_dim = 64,dim_hidden = 64,num_layers = 1,\
@@ -213,12 +177,6 @@ class GNN(nn.Module):
         return res[1:]
 
     def forward(self,X,target_tasklets,target_map_entry):
-        # dic = {"node_data":{"features":self.compute_node_representations(X["node_data"])}}
-        # dic["adjacency_lists"] = X["adjacency_lists"]
-        # dic["node_to_graph_idx"] = X["node_to_graph_idx"]
-        # dic["reference_node_graph_idx"] = X["reference_node_graph_idx"]
-        # dic["reference_node_ids"] = X["reference_node_ids"]
-        # dic["num_graphs"] = X["num_graphs"]
         X["node_data"] = {"features":self.compute_node_representations(X["node_data"])}
         X["node_to_graph_idx"] = X["node_to_graph_idx"][0]
         X["num_graphs"] = 1
