@@ -5,6 +5,7 @@ from aenum import convert
 from numpy.lib.arraysetops import isin
 import dace
 import dace.subsets
+import itertools
 from dace.transformation.dataflow import vectorization
 import numpy as np
 import os, glob
@@ -55,7 +56,7 @@ if not my_file.is_file():
     compute_paths()
 with open("/Users/benediktschesch/MyEnv/temp/sdfg_paths.pkl", "rb") as fp:
     paths = pickle.load(fp)
-#paths = paths[0:30]
+#paths = paths[0:20]
 
 #Metadata Initialization
 count = 0
@@ -64,6 +65,11 @@ max_free_symbols = 0
 max_params = 0
 max_num_map_entry = 0
 max_num_param = 0
+
+
+#Transform
+#(MapFusion,[(MapExit,"_first_map_exit"),(MapEntry,"_second_map_entry")])
+transforms = [(MapFusion,[(MapExit,"_first_map_exit"),(MapEntry,"_second_map_entry")]),(Vectorization,[(Tasklet,"_tasklet")])]
 
 #Define transformations to analyze
 transformations_tasklet = []
@@ -113,17 +119,32 @@ for file in tqdm(paths):
             list_nodes = []
             critical = True
 
-            list_trans_map_entry = [{"results":[],"nodes": \
-                [i.query_node(sdfg.sdfg_list[i.sdfg_id],i._second_map_entry) for i in \
-                    opt.get_pattern_matches(patterns=[trans])]} for \
-                        trans in transformations_map_entry]
-            list_trans_tasklet = [{"results":[],"nodes": \
-                [i.query_node(sdfg.sdfg_list[i.sdfg_id],i._tasklet) for i in \
-                    opt.get_pattern_matches(patterns=[trans])]} for \
-                        trans in transformations_tasklet]
 
-            x = len(state.nodes())
-            y = len(state.edges())
+
+            list_transform_points = [{"results":[],"points":[[] for i in range(len(b))]}\
+                 for (_,b) in transforms]
+            
+            for i,(_,elems) in enumerate(transforms):
+                for j,(typ,_) in enumerate(elems):
+                    for candidate in state.nodes()+state.edges():
+                        if isinstance(candidate,typ):
+                            list_transform_points[i]["points"][j].append(candidate)
+            for trans in list_transform_points:
+                trans["points"] = [list(i) for i in itertools.product(*trans["points"])]
+            
+            list_transforms = [[[i.query_node(sdfg.sdfg_list[i.sdfg_id],i.__getattribute__(b)) \
+                for (_,b) in ls] for i in \
+                opt.get_pattern_matches(patterns=[trans])] for \
+                        (trans,ls) in transforms]
+
+            for j,trans in enumerate(list_transform_points):
+                for i,candidate in enumerate(trans["points"]):
+                    if candidate in list_transforms[j]:
+                        trans["results"].append(1)
+                    else:
+                        trans["results"].append(0)
+
+
             for node in state.nodes():
                 free_symbols.update(node.free_symbols)
                 dic_node[node] = count
@@ -153,6 +174,9 @@ for file in tqdm(paths):
                 count += 1
             if not critical:
                 break
+            for j,trans in enumerate(list_transform_points):
+                for i,candidate in enumerate(trans["points"]):
+                    trans["points"][i] = [dic_node[elem] for elem in candidate]
 
             #Create free symbol dictionary
             for counter,sym in enumerate(list(free_symbols.difference(params))):
@@ -165,20 +189,10 @@ for file in tqdm(paths):
                         valid = False
                         break
                     valid = True
-                    for dic in list_trans_map_entry:
-                        if node in dic["nodes"]:
-                            dic["results"].append(1)
-                        else:
-                            dic["results"].append(0)
                     nodes_str.append({"Type":"MapEntry","data":map2str(map2dic(extract_map(node),freesymbol_dic,str_params_dic))})
                 elif isinstance(node,Tasklet):
                     tasklet.append(dic_node[node])
                     valid = True
-                    for dic in list_trans_tasklet:
-                        if node in dic["nodes"]:
-                            dic["results"].append(1)
-                        else:
-                            dic["results"].append(0)
                     nodes_str.append({"Type":type(node).__name__})
                 elif isinstance(node,MultiConnectorEdge):
                     nodes_str.append({"Type":"Memlet","data":mem2str(memlet2dic(extract_memlet(node),freesymbol_dic))})
@@ -191,25 +205,18 @@ for file in tqdm(paths):
                     valid = False
                     print("Uknown type of node: ",node)
                     break
-            #Delete useless data
-            for trans in list_trans_tasklet:
-                del trans["nodes"]
-            for trans in list_trans_map_entry:
-                del trans["nodes"]
 
             #Add graph if valid
             if valid:
                 max_free_symbols = max(max_free_symbols,len(free_symbols.difference(params)))
                 data_points.append({"G":{"adjacency_lists":adj_lists,"node_data":nodes_str},"file": file,
-                    "list_trans_map_entry": list_trans_map_entry,\
-                    "list_trans_tasklet":list_trans_tasklet,"tasklet":tasklet,"map_entry":map_entry})
+                    "list_trans": list_transform_points})
                 max_num_param = max(len(params),max_num_param)
                 max_num_map_entry = max(max_num_map_entry,num_map_entry)
 
 
 #Store output
 output = {"data":data_points,"max_num_param":max_num_param,"max_free_symbols":max_free_symbols, \
-    "max_num_map_entry": max_num_map_entry,\
-    "transformations_map_entry": transformations_map_entry, "transformations_tasklet":transformations_tasklet}
+    "max_num_map_entry": max_num_map_entry,"transforms": transforms}
 with open("/Users/benediktschesch/MyEnv/temp/Normalized_data.pkl", "wb") as fp:
     symbolic.SympyAwarePickler(fp).dump(output)

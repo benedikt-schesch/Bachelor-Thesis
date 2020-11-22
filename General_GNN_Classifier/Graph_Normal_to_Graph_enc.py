@@ -59,17 +59,21 @@ data_train, data_test = train_test_split(data_points, test_size=0.2)
 
 tasklets = 0
 map_entries = 0
-transformations_data_task = [[i.__name__,0,0] for i in raw_data["transformations_tasklet"]]
-transformations_data_map = [[i.__name__,0,0] for i in raw_data["transformations_map_entry"]]
+transformations_data = [[i.__name__,0,0] for (i,_) in raw_data["transforms"]]
 
 def gen_data(data_points):
     X = []
     for data_point in tqdm(data_points):
         encoder.shuffle_sym()
-        for i in range(16):
+        for i in range(1):
+            #Compute statisctics about transformations
+            for i in range(len(raw_data["transforms"])):
+                transformations_data[i][2] += len(data_point["list_trans"][i]["points"])
+                transformations_data[i][1] += sum(data_point["list_trans"][i]["results"])
+
+            
             new_data = copy.deepcopy(data_point)
             #Encode the nodes
-            calc = len(new_data["G"]["node_data"])
             for node in new_data["G"]["node_data"]:
                 if node["Type"] == "MapEntry":
                     node["data"] = torch.Tensor(encoder.encode(node["data"])).type(torch.LongTensor)
@@ -77,46 +81,34 @@ def gen_data(data_points):
                     node["data"] = torch.Tensor(encoder.encode(node["data"])).type(torch.LongTensor)
                 node["Type"] = type_dic[node["Type"]]
             
-            num_correct = sum(new_data["list_trans_map_entry"][0]["results"])
-            total = len(new_data["tasklet"])
-            
             new_data["G"]["adjacency_lists"] = [torch.Tensor(arr).type(torch.LongTensor).view(2,-1) for arr in new_data["G"]["adjacency_lists"]]
             new_data["G"]["node_to_graph_idx"] = torch.zeros(len(new_data["G"]["node_data"])).type(torch.LongTensor)
             new_data["G"]["reference_node_graph_idx"] = {}
             new_data["G"]["reference_node_ids"] = {}
-            new_data["tasklet"] = torch.Tensor(new_data["tasklet"]).type(torch.LongTensor)
-            new_data["map_entry"] = torch.Tensor(new_data["map_entry"]).type(torch.LongTensor)
             elem = 0
             for i in new_data["G"]["adjacency_lists"]:
                 for j in i:
                     if list(j) != []:
                         elem = max(elem,max(j))
-            assert elem < len(new_data["G"]["node_data"])
-            for dic2 in new_data["list_trans_map_entry"]:
-                dic2["results"] = torch.Tensor(dic2["results"]).type(torch.LongTensor)
-            for dic2 in new_data["list_trans_tasklet"]:
-                dic2["results"] = torch.Tensor(dic2["results"]).type(torch.LongTensor)
+
+            new_data["results"] = []
+            new_data["points"] = []
+            for dic2 in new_data["list_trans"]:
+                new_data["results"].append(torch.Tensor(dic2["results"]).type(torch.LongTensor))
+                new_data["points"].append(torch.Tensor(dic2["points"]).type(torch.LongTensor))
+            del new_data["list_trans"]
             del new_data["file"]
             X.append(new_data)
 
-            #Compute statisctics about tasklet transformations
-            for i in range(len(transformations_data_task)):
-                transformations_data_task[i][2] += len(data_point["tasklet"])
-                transformations_data_task[i][1] += sum(data_point["list_trans_tasklet"][i]["results"])
-            #Compute statisctics about map_entry transformations
-            for i in range(len(transformations_data_map)):
-                transformations_data_map[i][2] += len(data_point["map_entry"])
-                transformations_data_map[i][1] += sum(data_point["list_trans_map_entry"][i]["results"])
-            if total == 0 or num_correct*1.0/total < 0.3:
-                break
+            #if total == 0 or num_correct*1.0/total < 0.3:
+                #break
     return X
 
 
 raw_data["X_test"] = gen_data(data_train)
 raw_data["X_train"] = gen_data(data_test)
 del raw_data["data"]
-raw_data["transformations_data_map"] = transformations_data_map
-raw_data["transformations_data_task"] = transformations_data_task
+raw_data["transformations_data"] = transformations_data
 raw_data["dim_in"] = len(encoder)
 with open("/Users/benediktschesch/MyEnv/temp/train_data.pkl", "wb") as fp:
     symbolic.SympyAwarePickler(fp).dump(raw_data)
