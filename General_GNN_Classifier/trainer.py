@@ -77,7 +77,7 @@ model = GNN(dim_in = max_vocab,dim_hidden = 200,embedding_dim = 200,num_layers =
     transformations_tasklet = len(raw_data["transformations_tasklet"]),\
     transformations_map_entry = len(raw_data["transformations_map_entry"]))
 model.compute_metada(trainloader)
-optimizer = optim.Adam(model.parameters(), lr=0.00008)
+optimizer = optim.SGD(model.parameters(), lr=0.00008)
 criterion = nn.CrossEntropyLoss()
 epochs = 50
 

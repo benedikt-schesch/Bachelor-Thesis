@@ -55,7 +55,7 @@ if not my_file.is_file():
     compute_paths()
 with open("/Users/benediktschesch/MyEnv/temp/sdfg_paths.pkl", "rb") as fp:
     paths = pickle.load(fp)
-#paths = paths[0:10]
+#paths = paths[0:30]
 
 #Metadata Initialization
 count = 0
@@ -74,6 +74,7 @@ type_dic[MultiConnectorEdge] = 1
 type_dic[AccessNode] = 2
 type_dic[MapEntry] = 3
 type_dic[MapExit] = 4
+type_dic[Tasklet] = 4
 type_dic[NestedSDFG] = 5
 
 #Itterate over all files
@@ -105,11 +106,12 @@ for file in tqdm(paths):
             tasklet = []
             count = 0
             dic_node = {}
-            adj_lists = [[],[],[],[],[],[]]
+            adj_lists = [[],[],[],[],[],[],[]]
             str_params_dic = {}
             freesymbol_dic = {}
             num_map_entry = 0
-
+            list_nodes = []
+            critical = True
 
             list_trans_map_entry = [{"results":[],"nodes": \
                 [i.query_node(sdfg.sdfg_list[i.sdfg_id],i._second_map_entry) for i in \
@@ -120,7 +122,8 @@ for file in tqdm(paths):
                     opt.get_pattern_matches(patterns=[trans])]} for \
                         trans in transformations_tasklet]
 
-            
+            x = len(state.nodes())
+            y = len(state.edges())
             for node in state.nodes():
                 free_symbols.update(node.free_symbols)
                 dic_node[node] = count
@@ -128,31 +131,34 @@ for file in tqdm(paths):
                 count += 1
                 if isinstance(node,MapEntry):
                     params.update(node.params)
-                    for i,param in enumerate(node.params):
+                    for i,param in enumerate(reversed(node.params)):
                         str_params_dic[param] = "i"+str(num_map_entry)+str(i)
                         freesymbol_dic[dace.symbol(param)] = "i"+str(num_map_entry)+str(i)
                     max_num_param = max(max_num_param,len(node.params))
                     num_map_entry += 1
-            free_symbols = free_symbols.difference(params)
+                list_nodes += [node]
             for edge in state.edges():
+                free_symbols.update(edge.data.free_symbols)
                 u = edge._src
                 v = edge._dst
-                adj_lists[0] += (count,count)
+                adj_lists[0] += [(count,count)]
                 dic_node[edge] = count
                 if type(u) not in type_dic or type(v) not in type_dic:
+                    critical = False
                     break
                 for (a,b) in [(u,v),(v,u),(u,edge),(v,edge),(edge,u),(edge,v)]:
                     if (dic_node[a],dic_node[b]) not in adj_lists[type_dic[type(edge._src)]]:
                         adj_lists[type_dic[type(edge._src)]].append((dic_node[a],dic_node[b]))
-                nodes.append(edge)
+                list_nodes += [edge]
                 count += 1
+            if not critical:
+                break
 
             #Create free symbol dictionary
-            for count,sym in enumerate(list(free_symbols)):
-                if sym not in freesymbol_dic:
-                    freesymbol_dic[dace.symbol(sym)] = "N"+str(count)
+            for counter,sym in enumerate(list(free_symbols.difference(params))):
+                freesymbol_dic[dace.symbol(sym)] = "N"+str(counter)
 
-            for node in nodes:
+            for node in list_nodes:
                 if isinstance(node,MapEntry):
                     map_entry.append(dic_node[node])
                     if has_dynamic_map_inputs(state,node):
@@ -185,7 +191,6 @@ for file in tqdm(paths):
                     valid = False
                     print("Uknown type of node: ",node)
                     break
-                
             #Delete useless data
             for trans in list_trans_tasklet:
                 del trans["nodes"]
@@ -194,7 +199,7 @@ for file in tqdm(paths):
 
             #Add graph if valid
             if valid:
-                max_free_symbols = max(max_free_symbols,len(free_symbols))
+                max_free_symbols = max(max_free_symbols,len(free_symbols.difference(params)))
                 data_points.append({"G":{"adjacency_lists":adj_lists,"node_data":nodes_str},"file": file,
                     "list_trans_map_entry": list_trans_map_entry,\
                     "list_trans_tasklet":list_trans_tasklet,"tasklet":tasklet,"map_entry":map_entry})

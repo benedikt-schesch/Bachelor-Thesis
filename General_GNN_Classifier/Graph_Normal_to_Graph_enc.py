@@ -69,6 +69,7 @@ def gen_data(data_points):
         for i in range(16):
             new_data = copy.deepcopy(data_point)
             #Encode the nodes
+            calc = len(new_data["G"]["node_data"])
             for node in new_data["G"]["node_data"]:
                 if node["Type"] == "MapEntry":
                     node["data"] = torch.Tensor(encoder.encode(node["data"])).type(torch.LongTensor)
@@ -85,6 +86,12 @@ def gen_data(data_points):
             new_data["G"]["reference_node_ids"] = {}
             new_data["tasklet"] = torch.Tensor(new_data["tasklet"]).type(torch.LongTensor)
             new_data["map_entry"] = torch.Tensor(new_data["map_entry"]).type(torch.LongTensor)
+            elem = 0
+            for i in new_data["G"]["adjacency_lists"]:
+                for j in i:
+                    if list(j) != []:
+                        elem = max(elem,max(j))
+            assert elem < len(new_data["G"]["node_data"])
             for dic2 in new_data["list_trans_map_entry"]:
                 dic2["results"] = torch.Tensor(dic2["results"]).type(torch.LongTensor)
             for dic2 in new_data["list_trans_tasklet"]:
