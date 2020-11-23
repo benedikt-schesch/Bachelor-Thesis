@@ -71,7 +71,7 @@ max_num_param = 0
 #Transform
 #(MapFusion,[(MapExit,"_first_map_exit"),(MapEntry,"_second_map_entry")])  
 #transforms = [(MapFusion,[(MapExit,"_first_map_exit"),(MapEntry,"_second_map_entry")])]
-transforms = [(Vectorization,[(Tasklet,"_tasklet"),(MapEntry,"_map_entry")])]
+transforms = [(Vectorization,[(Tasklet,"_tasklet")])]
 #Define transformations to analyze
 transformations_tasklet = []
 transformations_map_entry = [MapFusion]

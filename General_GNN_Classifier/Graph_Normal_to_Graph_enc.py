@@ -107,8 +107,8 @@ def gen_data(data_points):
     return X
 
 
-raw_data["X_test"] = gen_data(data_train)
-raw_data["X_train"] = gen_data(data_test)
+raw_data["X_test"] = gen_data(data_test)
+raw_data["X_train"] = gen_data(data_train)
 del raw_data["data"]
 raw_data["transformations_data"] = transformations_data
 raw_data["dim_in"] = len(encoder)
