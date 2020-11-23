@@ -39,11 +39,11 @@ def compute_paths():
         for file in files:
             if file.endswith(".sdfg"):
                 paths.append(os.path.join(root, file))
-    with open("/Users/benediktschesch/MyEnv/Vectorization_paths.pkl", "wb") as fp:
+    with open("/Users/benediktschesch/MyEnv/temp/Vectorization_paths.pkl", "wb") as fp:
         pickle.dump(paths, fp)
 paths = []
-#compute_paths()
-with open("/Users/benediktschesch/MyEnv/Vectorization_paths.pkl", "rb") as fp:   # Unpickling
+compute_paths()
+with open("/Users/benediktschesch/MyEnv/temp/Vectorization_paths.pkl", "rb") as fp:   # Unpickling
     paths = pickle.load(fp)
 #paths = paths[0:20]
 count = 0

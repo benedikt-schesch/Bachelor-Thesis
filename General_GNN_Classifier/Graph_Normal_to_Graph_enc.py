@@ -65,7 +65,7 @@ def gen_data(data_points):
     X = []
     for data_point in tqdm(data_points):
         encoder.shuffle_sym()
-        for i in range(1):
+        for i in range(2):
             #Compute statisctics about transformations
             for i in range(len(raw_data["transforms"])):
                 transformations_data[i][2] += len(data_point["list_trans"][i]["points"])
@@ -93,6 +93,8 @@ def gen_data(data_points):
 
             new_data["results"] = []
             new_data["points"] = []
+            num_correct = sum(new_data["list_trans"][0]["results"])
+            total = len(new_data["list_trans"][0]["points"])
             for dic2 in new_data["list_trans"]:
                 new_data["results"].append(torch.Tensor(dic2["results"]).type(torch.LongTensor))
                 new_data["points"].append(torch.Tensor(dic2["points"]).type(torch.LongTensor))
@@ -100,7 +102,7 @@ def gen_data(data_points):
             del new_data["file"]
             X.append(new_data)
 
-            #if total == 0 or num_correct*1.0/total < 0.3:
+            #if total == 0 or num_correct*1.0/total < 0.2:
                 #break
     return X
 
@@ -111,4 +113,4 @@ del raw_data["data"]
 raw_data["transformations_data"] = transformations_data
 raw_data["dim_in"] = len(encoder)
 with open("/Users/benediktschesch/MyEnv/temp/train_data.pkl", "wb") as fp:
-    symbolic.SympyAwarePickler(fp).dump(raw_data)
+    pickle.dump(raw_data,fp)

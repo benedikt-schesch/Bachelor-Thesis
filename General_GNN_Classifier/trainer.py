@@ -5,6 +5,7 @@ import torch
 import math
 import networkx as nx
 import torch.nn as nn
+import numpy as np
 import torch
 from torch.utils.data import DataLoader
 from torch import Tensor, optim
@@ -25,7 +26,7 @@ with open("/Users/benediktschesch/MyEnv/temp/train_data.pkl", "rb") as fp:   # U
 
 max_vocab = raw_data["dim_in"]
 transforms = raw_data["transforms"]
-
+training_infos = [[],[],[],[]]
 X_train = raw_data["X_train"]
 X_test = raw_data["X_test"]
 
@@ -51,31 +52,31 @@ def predictions(loader,model,transforms):
                     stats[i][0] += 1
                     if torch.argmax(res[i][j]) == x["results"][i][0][j]:
                         stats[i][1] += 1
-
     for i in range(len(stats)):
         print("Transformation: ",transforms[i][0].__name__," Accuracy:",\
-                        "{:.3f}".format(stats[i][1]/stats[i][0]))
+                        "{:.4f}".format(stats[i][1]/stats[i][0]))
+    return stats[0][1]*1.0/stats[0][0]
 
 trainloader = DataLoader(X_train,batch_size=1)
 testloader = DataLoader(X_test,batch_size=1)
 
-model = GNN(dim_in = max_vocab,dim_hidden = 200,embedding_dim = 200,num_layers = 2,\
+model = GNN(dim_in = max_vocab,dim_hidden = 50,embedding_dim = 50,num_layers = 1,\
     transforms = [len(i) for (_,i) in raw_data["transforms"]])
 model.compute_metada(trainloader)
-optimizer = optim.SGD(model.parameters(), lr=0.008)
+optimizer = optim.SGD(model.parameters(), lr=0.01)
 criterion = nn.CrossEntropyLoss()
 epochs = 50
 
 
 def adjust_optim(optimizer, epoch):
     if epoch < 15:
-        optimizer.param_groups[0]['lr'] = 0.00008
+        optimizer.param_groups[0]['lr'] = 0.008
     elif epoch < 25:
-        optimizer.param_groups[0]['lr'] = 0.00003
+        optimizer.param_groups[0]['lr'] = 0.003
     elif epoch < 35:  
-        optimizer.param_groups[0]['lr'] = 0.00001
+        optimizer.param_groups[0]['lr'] = 0.001
     elif epoch < 50:  
-        optimizer.param_groups[0]['lr'] = 0.000005
+        optimizer.param_groups[0]['lr'] = 0.0005
 for e in range(epochs):
     running_loss = 0
     points = 0
@@ -96,16 +97,19 @@ for e in range(epochs):
         optimizer.step()
         running_loss += loss.item()
         assert not math.isnan(running_loss)
-    print("Epoch: {}/{} Training loss: {}".format(e+1,epochs,"{:.4f}".format(running_loss/points)))
-    if e % 4 == 0:
-        print("====================================================")
-        print("Test set:")
-        predictions(testloader,model,transforms)
-        print("Training set:")
-        predictions(trainloader,model,transforms)
-        print("====================================================")
+    print("Epoch: {}/{} Training loss: {}".format(e+1,epochs,"{:.6f}".format(running_loss/points)))
+    #if e % 4 == 0:
+    print("====================================================")
+    training_infos[0].append(e)
+    print("Test set:")
+    training_infos[1].append(predictions(testloader,model,transforms))
+    print("Training set:")
+    training_infos[2].append(predictions(trainloader,model,transforms))
+    training_infos[3].append(running_loss/points)
+    print("====================================================")
     #adjust_optim(optimizer,e)
 print("Training accuracy:")
 predictions(trainloader,model,transforms)
 print("Validation accuracy:")
 predictions(testloader,model,transforms)
+np.savetxt("/Users/benediktschesch/MyEnv/temp/training_infos.csv", np.array(training_infos), delimiter=',')

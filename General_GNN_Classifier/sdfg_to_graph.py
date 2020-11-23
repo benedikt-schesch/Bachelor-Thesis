@@ -1,6 +1,7 @@
 #
 #Find all the SDFGs in our computer, extract them and convert them to a networkx structure
 #
+from pickle import MARK
 from aenum import convert
 from numpy.lib.arraysetops import isin
 import dace
@@ -68,9 +69,9 @@ max_num_param = 0
 
 
 #Transform
-#(MapFusion,[(MapExit,"_first_map_exit"),(MapEntry,"_second_map_entry")])
-transforms = [(MapFusion,[(MapExit,"_first_map_exit"),(MapEntry,"_second_map_entry")]),(Vectorization,[(Tasklet,"_tasklet")])]
-
+#(MapFusion,[(MapExit,"_first_map_exit"),(MapEntry,"_second_map_entry")])  
+#transforms = [(MapFusion,[(MapExit,"_first_map_exit"),(MapEntry,"_second_map_entry")])]
+transforms = [(Vectorization,[(Tasklet,"_tasklet"),(MapEntry,"_map_entry")])]
 #Define transformations to analyze
 transformations_tasklet = []
 transformations_map_entry = [MapFusion]
@@ -92,7 +93,7 @@ for file in tqdm(paths):
         continue
     
     #Itterate over all SDFGS
-    for sdfg in [file_sdfg]:#file_sdfg.all_sdfgs_recursive():
+    for sdfg in file_sdfg.all_sdfgs_recursive():
         #sdfg.apply_transformations_repeated(MapExpansion)
         
         opt = Optimizer(sdfg)
@@ -149,7 +150,6 @@ for file in tqdm(paths):
                 free_symbols.update(node.free_symbols)
                 dic_node[node] = count
                 adj_lists[0] += [(count,count)]
-                count += 1
                 if isinstance(node,MapEntry):
                     params.update(node.params)
                     for i,param in enumerate(reversed(node.params)):
@@ -157,7 +157,18 @@ for file in tqdm(paths):
                         freesymbol_dic[dace.symbol(param)] = "i"+str(num_map_entry)+str(i)
                     max_num_param = max(max_num_param,len(node.params))
                     num_map_entry += 1
+                    ex = state.exit_node(node)
+                    if ex in dic_node:
+                        adj_lists[type_dic[MapExit]] += [(dic_node[ex],count)]
+                        adj_lists[type_dic[MapEntry]] += [(count,dic_node[ex])]
+                if isinstance(node,MapExit):
+                    entry = state.entry_node(node)
+                    if entry in dic_node:
+                        adj_lists[type_dic[MapEntry]] += [(dic_node[entry],count)]
+                        adj_lists[type_dic[MapExit]] += [(count,dic_node[entry])]
+                count += 1
                 list_nodes += [node]
+
             for edge in state.edges():
                 free_symbols.update(edge.data.free_symbols)
                 u = edge._src
