@@ -65,7 +65,7 @@ def gen_data(data_points):
     X = []
     for data_point in tqdm(data_points):
         encoder.shuffle_sym()
-        for i in range(2):
+        for augment in range(4):
             #Compute statisctics about transformations
             for i in range(len(raw_data["transforms"])):
                 transformations_data[i][2] += len(data_point["list_trans"][i]["points"])
@@ -101,9 +101,9 @@ def gen_data(data_points):
             del new_data["list_trans"]
             del new_data["file"]
             X.append(new_data)
-
-            #if total == 0 or num_correct*1.0/total < 0.2:
-                #break
+            #if augment > 3:
+                #if total == 0 or num_correct*1.0/total < 0.1:
+                    #break
     return X
 
 
@@ -112,5 +112,7 @@ raw_data["X_train"] = gen_data(data_train)
 del raw_data["data"]
 raw_data["transformations_data"] = transformations_data
 raw_data["dim_in"] = len(encoder)
-with open("/Users/benediktschesch/MyEnv/temp/train_data.pkl", "wb") as fp:
+for i in raw_data["transformations_data"]:
+    print("Transformation: ",i[0]," Number of Training Points: ",i[2]," Positive Rate: ",i[1]*100.0/i[2],"%")
+with open("/Users/benediktschesch/MyEnv/temp/train_data_V.pkl", "wb") as fp:
     pickle.dump(raw_data,fp)

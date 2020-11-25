@@ -20,7 +20,7 @@ if torch.cuda.is_available():
   torch.set_default_tensor_type('torch.cuda.FloatTensor')
 else:
   torch.set_default_tensor_type('torch.FloatTensor')
-with open("/Users/benediktschesch/MyEnv/temp/train_data.pkl", "rb") as fp:   # Unpickling
+with open("/Users/benediktschesch/MyEnv/temp/train_data_VMF.pkl", "rb") as fp:   # Unpickling
     raw_data = pickle.load(fp)
 
 
@@ -42,8 +42,21 @@ def predictions(loader,model,transforms):
     stats = [[0,0] for i in transforms]
     with torch.no_grad():
         for x in loader:
+            #GPU support
+            for i in range(len(x["G"]["adjacency_lists"])):
+              x["G"]["adjacency_lists"][i] = x["G"]["adjacency_lists"][i].to(device)
+            for i in x["G"]["node_data"]:
+              if "data" in i:
+                i["data"] = i["data"].to(device)
+              i["Type"]  = i["Type"].to(device)
+            x["G"]["node_to_graph_idx"] = x["G"]["node_to_graph_idx"].to(device)
+            x["results"][0] = x["results"][0].to(device)
+            x["points"][0]  = x["points"][0].to(device)
+            x["results"][1] = x["results"][1].to(device)
+            x["points"][1]  = x["points"][1].to(device)
+            #GPU support
+
             graph = x["G"]
-            # setting gradient to zeros
             res = model(graph,x["points"])
             correct_result = 0
             total = 0.0
@@ -62,15 +75,16 @@ testloader = DataLoader(X_test,batch_size=1)
 
 model = GNN(dim_in = max_vocab,dim_hidden = 50,embedding_dim = 50,num_layers = 1,\
     transforms = [len(i) for (_,i) in raw_data["transforms"]])
-model.compute_metada(trainloader)
-optimizer = optim.SGD(model.parameters(), lr=0.01)
+model.to(device)
+model.compute_metada(trainloader,device)
+optimizer = optim.SGD(model.parameters(), lr=0.008)
 criterion = nn.CrossEntropyLoss()
 epochs = 50
 
 
 def adjust_optim(optimizer, epoch):
     if epoch < 15:
-        optimizer.param_groups[0]['lr'] = 0.008
+        optimizer.param_groups[0]['lr'] = 0.005
     elif epoch < 25:
         optimizer.param_groups[0]['lr'] = 0.003
     elif epoch < 35:  
@@ -81,6 +95,20 @@ for e in range(epochs):
     running_loss = 0
     points = 0
     for x in trainloader:
+        #GPU Support
+        for i in range(len(x["G"]["adjacency_lists"])):
+          x["G"]["adjacency_lists"][i] = x["G"]["adjacency_lists"][i].to(device)
+        for i in x["G"]["node_data"]:
+          if "data" in i:
+            i["data"] = i["data"].to(device)
+          i["Type"]  = i["Type"].to(device)
+        x["G"]["node_to_graph_idx"] = x["G"]["node_to_graph_idx"].to(device)
+        x["results"][0] = x["results"][0].to(device)
+        x["points"][0]  = x["points"][0].to(device)
+        x["results"][1] = x["results"][1].to(device)
+        x["points"][1]  = x["points"][1].to(device)
+        #GPU Support
+        
         graph = x["G"]
         # setting gradient to zeros
         optimizer.zero_grad()
@@ -107,7 +135,7 @@ for e in range(epochs):
         training_infos[2].append(predictions(trainloader,model,transforms))
         training_infos[3].append(running_loss/points)
         print("====================================================")
-    #adjust_optim(optimizer,e)
+    adjust_optim(optimizer,e)
 print("Training accuracy:")
 predictions(trainloader,model,transforms)
 print("Validation accuracy:")

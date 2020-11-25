@@ -118,7 +118,7 @@ class GNN(nn.Module):
             self.trans_layers.append(operations)
         self.gnn_model = create_graph2class_gnn_model(hidden_state_size=dim_hidden+6,embedding_size = dim_hidden+6)
     
-    def compute_metada(self,data_points):
+    def compute_metada(self,data_points,device):
         data = []
         for data_point in data_points:
             G = data_point["G"]
@@ -135,6 +135,7 @@ class GNN(nn.Module):
             data.append(graph_data)
         self.gnn_model.compute_metadata(data)
         self.gnn = self.gnn_model.build_neural_module()
+        self.gnn.to(device)
 
     def node_representation(self,e):
         type_tensor = e["Type"]
