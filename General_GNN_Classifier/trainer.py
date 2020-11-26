@@ -20,7 +20,7 @@ if torch.cuda.is_available():
   torch.set_default_tensor_type('torch.cuda.FloatTensor')
 else:
   torch.set_default_tensor_type('torch.FloatTensor')
-with open("/Users/benediktschesch/MyEnv/temp/train_data_VMF.pkl", "rb") as fp:   # Unpickling
+with open("/Users/benediktschesch/MyEnv/temp/train_data_tot.pkl", "rb") as fp:   # Unpickling
     raw_data = pickle.load(fp)
 
 
@@ -30,6 +30,18 @@ training_infos = [[],[],[],[]]
 X_train = raw_data["X_train"]
 X_test = raw_data["X_test"]
 
+#In case one wants to have a single edge class
+# for x in X_train:
+#   for i in range(len(x["G"]["adjacency_lists"])-1):
+#     x["G"]["adjacency_lists"][0] = torch.cat((x["G"]["adjacency_lists"][0],x["G"]["adjacency_lists"][i+1]),1)
+#   x["G"]["adjacency_lists"] = [x["G"]["adjacency_lists"][0]]
+
+# for x in X_test:
+#   for i in range(len(x["G"]["adjacency_lists"])-1):
+#     x["G"]["adjacency_lists"][0] = torch.cat((x["G"]["adjacency_lists"][0],x["G"]["adjacency_lists"][i+1]),1)
+#   x["G"]["adjacency_lists"] = [x["G"]["adjacency_lists"][0]]
+#In case one wants to have a single edge class
+
 print("Device: ",device)
 print("Number of training graphs: {}".format(len(X_train)))
 print("Number of validation graphs: {}".format(len(X_test)))
@@ -38,8 +50,9 @@ for i in raw_data["transformations_data"]:
 
 
 
-def predictions(loader,model,transforms):
+def predictions(loader,model,transforms,list):
     stats = [[0,0] for i in transforms]
+    stat = []
     with torch.no_grad():
         for x in loader:
             #GPU support
@@ -50,25 +63,23 @@ def predictions(loader,model,transforms):
                 i["data"] = i["data"].to(device)
               i["Type"]  = i["Type"].to(device)
             x["G"]["node_to_graph_idx"] = x["G"]["node_to_graph_idx"].to(device)
-            x["results"][0] = x["results"][0].to(device)
-            x["points"][0]  = x["points"][0].to(device)
-            x["results"][1] = x["results"][1].to(device)
-            x["points"][1]  = x["points"][1].to(device)
+            for i in range(len(x["results"])):
+                x["results"][i] = x["results"][i].to(device)
+                x["points"][i]  = x["points"][i].to(device)
             #GPU support
 
             graph = x["G"]
             res = model(graph,x["points"])
-            correct_result = 0
-            total = 0.0
             for i in range(len(transforms)):
                 for j in range(len(res[i])):
                     stats[i][0] += 1
                     if torch.argmax(res[i][j]) == x["results"][i][0][j]:
                         stats[i][1] += 1
     for i in range(len(stats)):
+        stat.append(stats[i][1]/stats[i][0])
         print("Transformation: ",transforms[i][0].__name__," Accuracy:",\
                         "{:.4f}".format(stats[i][1]/stats[i][0]))
-    return stats[0][1]*1.0/stats[0][0]
+    list.append(stat)
 
 trainloader = DataLoader(X_train,batch_size=1)
 testloader = DataLoader(X_test,batch_size=1)
@@ -91,6 +102,9 @@ def adjust_optim(optimizer, epoch):
         optimizer.param_groups[0]['lr'] = 0.001
     elif epoch < 50:  
         optimizer.param_groups[0]['lr'] = 0.0005
+
+predictions(trainloader,model,transforms,training_infos[3])
+print("done")
 for e in range(epochs):
     running_loss = 0
     points = 0
@@ -103,10 +117,9 @@ for e in range(epochs):
             i["data"] = i["data"].to(device)
           i["Type"]  = i["Type"].to(device)
         x["G"]["node_to_graph_idx"] = x["G"]["node_to_graph_idx"].to(device)
-        x["results"][0] = x["results"][0].to(device)
-        x["points"][0]  = x["points"][0].to(device)
-        x["results"][1] = x["results"][1].to(device)
-        x["points"][1]  = x["points"][1].to(device)
+        for i in range(len(x["results"])):
+            x["results"][i] = x["results"][i].to(device)
+            x["points"][i]  = x["points"][i].to(device)
         #GPU Support
         
         graph = x["G"]
@@ -129,11 +142,11 @@ for e in range(epochs):
     if e % 9 == 0:
         print("====================================================")
         training_infos[0].append(e)
+        training_infos[1].append(running_loss/points)
         print("Test set:")
-        training_infos[1].append(predictions(testloader,model,transforms))
+        predictions(testloader,model,transforms,training_infos[2])
         print("Training set:")
-        training_infos[2].append(predictions(trainloader,model,transforms))
-        training_infos[3].append(running_loss/points)
+        predictions(trainloader,model,transforms,training_infos[3])
         print("====================================================")
     adjust_optim(optimizer,e)
 print("Training accuracy:")
@@ -141,3 +154,5 @@ predictions(trainloader,model,transforms)
 print("Validation accuracy:")
 predictions(testloader,model,transforms)
 np.savetxt("/Users/benediktschesch/MyEnv/temp/training_infos.csv", np.array(training_infos), delimiter=',')
+torch.save(model.state_dict(),"model.pt")
+print("Model has been saved")

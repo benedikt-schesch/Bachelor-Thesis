@@ -2,7 +2,7 @@
 # This file defines the GNN structure
 #
 import torch
-from ptgnn.neuralmodels.gnn import GnnOutput, GraphData
+from ptgnn.neuralmodels.gnn import GraphData
 from ptgnn.neuralmodels.embeddings.linearmapembedding import FeatureRepresentationModel
 from ptgnn.neuralmodels.gnn import GraphNeuralNetworkModel
 from ptgnn.neuralmodels.gnn.messagepassing import GatedMessagePassingLayer, MlpMessagePassingLayer
@@ -67,18 +67,18 @@ def create_graph2class_gnn_model(hidden_state_size: int = 2, embedding_size = 2,
         r1 = ConcatResidualLayer(hidden_state_size)
         r2 = ConcatResidualLayer(hidden_state_size)
         return [
-            # r1.pass_through_dummy_layer(),
+            r1.pass_through_dummy_layer(),
             mlp_mp_constructor(),
-            #mlp_mp_constructor(),
-            #mlp_mp_constructor(),
-            # r1,
-            # mlp_mp_after_res_constructor(),
-            # r2.pass_through_dummy_layer(),
-            # mlp_mp_constructor(),
-            # mlp_mp_constructor(),
-            # mlp_mp_constructor(),
-            # r2,
-            # mlp_mp_after_res_constructor(),
+            mlp_mp_constructor(),
+            mlp_mp_constructor(),
+            r1,
+            mlp_mp_after_res_constructor(),
+            r2.pass_through_dummy_layer(),
+            mlp_mp_constructor(),
+            mlp_mp_constructor(),
+            mlp_mp_constructor(),
+            r2,
+            mlp_mp_after_res_constructor(),
         ]
 
     return GraphNeuralNetworkModel(

@@ -102,8 +102,8 @@ def gen_data(data_points):
             del new_data["file"]
             X.append(new_data)
             #if augment > 3:
-                #if total == 0 or num_correct*1.0/total < 0.1:
-                    #break
+            #    if total == 0 or num_correct*1.0/total < 0.1:
+            #        break
     return X
 
 
@@ -114,5 +114,5 @@ raw_data["transformations_data"] = transformations_data
 raw_data["dim_in"] = len(encoder)
 for i in raw_data["transformations_data"]:
     print("Transformation: ",i[0]," Number of Training Points: ",i[2]," Positive Rate: ",i[1]*100.0/i[2],"%")
-with open("/Users/benediktschesch/MyEnv/temp/train_data_V.pkl", "wb") as fp:
+with open("/Users/benediktschesch/MyEnv/temp/train_data.pkl", "wb") as fp:
     pickle.dump(raw_data,fp)
