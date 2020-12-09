@@ -1,4 +1,6 @@
 import dace
+import random
+from dace.frontend.operations import detect_reduction_type
 def range2list(range,dic_free_symbols):
     text = []
     for rge in range:
@@ -10,6 +12,7 @@ def memlet2dic(memlet,dic_free_symbols):
     result["Dynamic"] = memlet["Dynamic"]
     result["Volume"] = memlet["Volume"].subs(dic_free_symbols)
     result["empty"] = memlet["empty"]
+    result["wcr"] = memlet["wcr"]
     count = 0
     while "Range"+str(count) in memlet:
         result["Range"+str(count)] = range2list(memlet["Range"+str(count)],dic_free_symbols)
@@ -18,7 +21,7 @@ def memlet2dic(memlet,dic_free_symbols):
 
 def map2dic(map,dic_free_symbols,str_dic_params):
     dic = []
-    for i in range(map["num_params"]):
+    for i in reversed(range(map["num_params"])):
         dic += [(str_dic_params[map["param"+str(i)]],range2list(map["range"+str(i)],dic_free_symbols))]
     return dic
 
@@ -37,7 +40,10 @@ def extract_memlet(Memlet):
     dictionary = {}
     dictionary["Volume"] = Memlet.data.volume
     dictionary["Dynamic"] = Memlet.data.dynamic
-    dictionary["wcr"] = Memlet.data.wcr
+    if detect_reduction_type(Memlet.data.wcr) is not None:
+        dictionary["wcr"] = detect_reduction_type(Memlet.data.wcr).value
+    else:
+        dictionary["wcr"] = 0
     num_range = 0
     if Memlet.data.is_empty():
         dictionary["empty"] = True
@@ -61,11 +67,13 @@ def mem2str(memlet):
         return "EMPTYMEMLET"
     text = str(int(memlet["Dynamic"]))
     text += "SEPMEM1"
-    text += str(memlet["Volume"])
+    text += "WCR"+str(memlet["wcr"])
     text += "SEPMEM2"
+    text += str(memlet["Volume"])
+    text += "SEPMEM3"
     count = 0
     while "Range"+str(count) in memlet:
-        text += range2str(memlet["Range"+str(count)])+"SEPMEM3"
+        text += range2str(memlet["Range"+str(count)])+"SEPMEM4"
         count += 1
     return text
 
@@ -82,8 +90,12 @@ class Encoder():
         self.dic_params = {}
         self.dic_sym = {}
         count = 1
-        for i in ["RANGESEP","SEPMEM1","SEPMEM2","SEPMEM3","SEPMAP1","SEPMAP2","MEMSEPIN","MEMSEPOUT","EMPTYMEMLET"]:
+        for i in ["RANGESEP","SEPMEM1","SEPMEM2","SEPMEM3","SEPMEM4","SEPMAP1","SEPMAP2"\
+            ,"MEMSEPIN","MEMSEPOUT","EMPTYMEMLET"]:
             self.dic[i] = count
+            count += 1
+        for i in range(15):
+            self.dic["WCR"+str(i)] = count
             count += 1
         for i in [0,1,2,3,4,5,6,7,8,9]:
             self.dic[str(i)] = count
@@ -96,15 +108,25 @@ class Encoder():
             self.dic_sym["N"+str(i)] = count
             count += 1
         for i in range(max_map_entry):
+            dic = {}
             for j in range(max_param):
-                self.dic_params["i"+str(i)+str(j)] = count
+                dic[str(j)] = count
                 count += 1
+            self.dic_params["i"+str(i)] = dic
         self.len = count
 
     def shuffle_sym(self):
-        l = list(self.dic_sym.items())
-        random.shuffle(l)
-        self.dic_sym = dict(self.dic_sym)
+        first = list(self.dic_sym.keys())
+        val = list(self.dic_sym.values())
+        random.shuffle(first)
+        for i in range(len(first)):
+            self.dic_sym[first[i]] = val[i]
+        first = list(self.dic_params.keys())
+        val = list(self.dic_params.values())
+        random.shuffle(first)
+        for i in range(len(first)):
+            self.dic_params[first[i]] = val[i]
+        return
 
     def __len__(self):
         return self.len
@@ -120,7 +142,9 @@ class Encoder():
                 return [self.dic[i]]+self.encode(text[len(i):])
         for i in self.dic_params:
             if text.startswith(i):
-                return [self.dic_params[i]]+self.encode(text[len(i):])
+                for j in self.dic_params[i]:
+                    if text.startswith(i+j):
+                        return [self.dic_params[i][j]]+self.encode(text[len(i+j):])
         for i in self.dic_sym:
             if text.startswith(i):
                 return [self.dic_sym[i]]+self.encode(text[len(i):])

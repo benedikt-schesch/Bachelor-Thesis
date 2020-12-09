@@ -4,251 +4,114 @@ from typing_extensions import TypedDict
 import torch
 from docopt import docopt
 from dpu_utils.utils import RichPath, run_and_debug
-
+import math
 import networkx as nx
-from ptgnn.baseneuralmodel.trainer import AbstractScheduler
+import copy
+import numpy as np
+from sklearn.model_selection import train_test_split
+import torch.nn as nn
+import torch
+from torch.utils.data import Dataset, DataLoader
+from torch import Tensor, optim
+import pickle
+from tqdm import tqdm
+import sys
+sys.path.append("/Users/benediktschesch/MyEnv/Vectorization_GNN")
+from Vect_GNN import GNN,create_graph2class_gnn_model
 
-from ptgnn.baseneuralmodel import ModelTrainer
-from ptgnn.baseneuralmodel.utils.amlutils import configure_logging, log_run
-from ptgnn.baseneuralmodel.utils.data import LazyDataIterable
-from LoopDetection import Graph2Class
-from ptgnn.neuralmodels.embeddings.linearmapembedding import (
-    FeatureRepresentationModel,
-)
-from ptgnn.neuralmodels.gnn import GraphNeuralNetworkModel
-from ptgnn.neuralmodels.gnn.messagepassing import GatedMessagePassingLayer, MlpMessagePassingLayer
-from ptgnn.neuralmodels.gnn.messagepassing.residuallayers import ConcatResidualLayer
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+if torch.cuda.is_available():
+  torch.set_default_tensor_type('torch.cuda.FloatTensor')
+else:
+  torch.set_default_tensor_type('torch.FloatTensor')
+with open("/Users/benediktschesch/MyEnv/temp/Vect_dic_data.pkl", "rb") as fp:   # Unpickling
+    raw_data = pickle.load(fp)
+max_vocab = raw_data["dim_in"]
+X = raw_data["X"]
+X_train,X_test = train_test_split(X, test_size=0.2)
+training_infos = [[],[],[],[]]
 
-def create_graph2class_gnn_model(hidden_state_size: int = 2, dropout_rate: float = 0.1):
-    def create_ggnn_mp_layers(num_edges: int):
-        ggnn_mp = GatedMessagePassingLayer(
-            state_dimension=hidden_state_size,
-            message_dimension=hidden_state_size,
-            num_edge_types=num_edges,
-            message_aggregation_function="max",
-            dropout_rate=dropout_rate,
-        )
-        r1 = ConcatResidualLayer(hidden_state_size)
-        return [
-            r1.pass_through_dummy_layer(),
-            ggnn_mp,
-            ggnn_mp,
-            ggnn_mp,
-            ggnn_mp,
-            ggnn_mp,
-            ggnn_mp,
-            ggnn_mp,
-            r1,
-            GatedMessagePassingLayer(
-                state_dimension=2 * hidden_state_size,
-                message_dimension=hidden_state_size,
-                num_edge_types=num_edges,
-                message_aggregation_function="max",
-                dropout_rate=dropout_rate,
-            ),
-        ]
+print("Device: ",device)
+print("Positive rate: {}%".format(raw_data["positive"]*100.0/raw_data["total"]))
+print("Number of graphs: {}".format(len(X)))
+print("Number of data points: {}".format(raw_data["total"]))
+print("Number of training graphs: {}".format(len(X_train)))
+print("Number of validation graphs: {}".format(len(X_test)))
+#print("Data augmentation factor: {}".format(len(X[0][0])))
 
-    def create_mlp_mp_layers(num_edges: int):
-        mlp_mp_constructor = lambda: MlpMessagePassingLayer(
-            input_state_dimension=hidden_state_size,
-            message_dimension=hidden_state_size,
-            output_state_dimension=hidden_state_size,
-            num_edge_types=num_edges,
-            message_aggregation_function="max",
-            use_layer_norm = False,
-            message_activation = None,
-            dropout_rate=0,
-            dense_activation = None,
-        )
-        mlp_mp_after_res_constructor = lambda: MlpMessagePassingLayer(
-            input_state_dimension=2 * hidden_state_size,
-            message_dimension=2 * hidden_state_size,
-            output_state_dimension=hidden_state_size,
-            num_edge_types=num_edges,
-            message_aggregation_function="max",
-            use_layer_norm = False,
-            message_activation = None,
-            dropout_rate=0,
-        )
-        r1 = ConcatResidualLayer(hidden_state_size)
-        r2 = ConcatResidualLayer(hidden_state_size)
-        return [
-            # r1.pass_through_dummy_layer(),
-            mlp_mp_constructor(),
-            #mlp_mp_constructor(),
-            #mlp_mp_constructor(),
-            # r1,
-            # mlp_mp_after_res_constructor(),
-            # r2.pass_through_dummy_layer(),
-            # mlp_mp_constructor(),
-            # mlp_mp_constructor(),
-            # mlp_mp_constructor(),
-            # r2,
-            # mlp_mp_after_res_constructor(),
-        ]
+class my_dataset(Dataset):
+    def __init__(self,data):
+        self.data=data
+    def __getitem__(self, index):
+        return self.data[index]
+    def __len__(self):
+        return len(self.data)
 
-    return Graph2Class(
-        gnn_model=GraphNeuralNetworkModel(
-            node_representation_model=FeatureRepresentationModel(embedding_size=2),
-            message_passing_layer_creator=create_mlp_mp_layers,
-            max_nodes_per_graph=100000,
-            max_graph_edges=500000,
-            introduce_backwards_edges=False,
-            add_self_edges=True,
-            stop_extending_minibatch_after_num_nodes=120000,
-        ),
-    )
-def load_from_folder(path: RichPath, shuffle: bool):
-    all_files = path.get_filtered_files_in_dir("*.jsonl.gz")
-    if shuffle:
-        random.shuffle(all_files)
-    for file in all_files:
-        yield from file.read_as_jsonl()
 
-def generate_random_graph(num_graphs,max_num_nodes):
-    class GraphRandomizer(object):
-        def __init__(self, num_graphs):
-            self.num_graphs = num_graphs
-            self.counter = 0
-        
-        def __iter__(self):
-           return self
+def predictions(X,model):
+    correct_result = 0
+    total = 0.0
+    curr = copy.deepcopy(X)
+    with torch.no_grad():
+        for x in curr:
+            graph = x["G"]
+            target_nodes = x["target_nodes"] 
+            output = model(graph,target_nodes)
+            for i in range(len(target_nodes)):
+                total+=1
+                if torch.argmax(output[i]) == x["target"][i]:
+                    correct_result +=1
+    return 1.0*correct_result/(1.0*total)
 
-        def __next__(self):
-            if self.counter >= self.num_graphs:
-                self.counter = 0
-                raise StopIteration
-            self.counter += 1
-            n = random.randint(2, max_num_nodes)
-            G = nx.gnm_random_graph(n,random.randint(0,n))
-            res = [0 for i in range(len(G.nodes))]
-            for i in nx.descendants(G,0):
-                res[i] = 1
-            res[0] = 1
-            graph:  XGraph = {"nodes": G.nodes,"edges": G.edges,"result": res}
-            return graph
+datasettrain = my_dataset(X_train)
+trainloader = DataLoader(datasettrain,batch_size=1)
+datasettest = my_dataset(X_test)
+testloader = DataLoader(datasettest,batch_size=1)
 
-    '''
-    list = []
-    for i in range(num_graphs):
-        n = random.randint(2, max_num_nodes)
-        G = nx.gnm_random_graph(n,random.randint(0,n))
-        res = [0 for i in range(len(G.nodes))]
-        for i in nx.descendants(G,0):
-            res[i] = 1
-        res[0] = 1
-        graph:  XGraph = {"nodes": G.nodes,"edges": G.edges,"result": res}
-        list.append(graph)
-    return list
-    '''
-    return GraphRandomizer(num_graphs)
+model = GNN(dim_in = max_vocab,dim_hidden = 100,embedding_dim = 100,num_layers = 1)
+model.compute_metada(X)
+optimizer = optim.SGD(model.parameters(), lr=0.0005)
+criterion = nn.CrossEntropyLoss()
+epochs = 50
 
-def run(training_data,validation_data):
-    #training_data_path = RichPath.create(arguments["TRAIN_DATA_PATH"], azure_info_path)
-    #training_data = LazyDataIterable(lambda: load_from_folder(training_data_path, shuffle=True))
-    #validation_data_path = RichPath.create(arguments["VALID_DATA_PATH"], azure_info_path)
-    #validation_data = LazyDataIterable(
-        #lambda: load_from_folder(validation_data_path, shuffle=False)
-    #)
+def adjust_optim(optimizer, epoch):
+    if epoch < 15:
+        optimizer.param_groups[0]['lr'] = 0.0005
+    elif epoch < 25:
+        optimizer.param_groups[0]['lr'] = 0.0001
+    elif epoch < 35:  
+        optimizer.param_groups[0]['lr'] = 0.00003
+    elif epoch < 50:  
+        optimizer.param_groups[0]['lr'] = 0.00001
+print("Validation accuracy: {} Training accuracy: {}".format("%.3f" % predictions(X_test,model),"%.3f" % predictions(X_train,model)))
+for e in range(epochs):
+    running_loss = 0
+    curr = copy.deepcopy(X_train)
+    random.shuffle(curr)
+    for x in curr:
+        graph = x["G"]
+        target_nodes = x["target_nodes"]
+        # setting gradient to zeros
+        optimizer.zero_grad()        
+        output = model(graph,target_nodes)
+        loss = criterion(output, x["target"])
+        # backward propagation
+        loss.backward()
+        # update the gradient to new gradients
+        optimizer.step()
+        if math.isnan(loss.item()):
+            continue
+        running_loss += loss.item()
+        assert not math.isnan(running_loss)
+    training_infos[0].append(e)
+    training_infos[1].append(running_loss/len(X_train))
+    acctest = predictions(X_test,model)
+    training_infos[2].append(acctest)
+    acctrain = predictions(X_train,model)
+    training_infos[3].append(acctrain)
+    print("Epoch: {}/{} Training loss: {} Validation accuracy: {} Training accuracy: {}".format(e,(epochs-1),"%.3f" % (running_loss/len(X_train)),"%.3f" % acctest,"%.3f" % acctrain))
+    #adjust_optim(optimizer,e)
 
-    model_path = Path("model.pkl.gz")
-    assert model_path.name.endswith(".pkl.gz"), "MODEL_FILENAME must have a `.pkl.gz` suffix."
-
-    initialize_metadata = True
-    restore_path = False
-    if restore_path:
-        initialize_metadata = False
-        model, nn = Graph2Class.restore_model(Path(restore_path))
-    else:
-        nn = None
-        model = create_graph2class_gnn_model()
-
-    def create_optimizer(parameters):
-        return torch.optim.SGD(parameters,lr=0.5)
-
-    class sched(AbstractScheduler):
-        def __init__(self,optim):
-            self.optim = optim
-
-        def step(self, epoch_idx: int, epoch_step: int) -> None:
-            if epoch_idx > 6:
-                self.optim.param_groups[0]['lr'] = 0.01
-            if epoch_idx > 12:
-                self.optim.param_groups[0]['lr'] = 0.001
-            if epoch_idx > 18:
-                self.optim.param_groups[0]['lr'] = 0.0001
-            if epoch_step == 63:
-                print(self.optim.param_groups[0]['lr'])
-    def scheduler_creator(optim):
-        return sched(optim)
-
-    trainer = ModelTrainer(
-        model,
-        model_path,
-        max_num_epochs=64,
-        minibatch_size=1,
-        optimizer_creator=create_optimizer,
-        scheduler_creator=scheduler_creator,
-        clip_gradient_norm=1,
-        target_validation_metric="Accuracy",
-        target_validation_metric_higher_is_better=True,
-    )
-    if nn is not None:
-        trainer.neural_module = nn
-
-    trainer.register_train_epoch_end_hook(
-        lambda model, nn, epoch, metrics: None
-    )
-    trainer.register_validation_epoch_end_hook(
-        lambda model, nn, epoch, metrics: None
-    )
-
-    trainer.train(
-        training_data,
-        validation_data,
-        show_progress_bar=True,
-        initialize_metadata=initialize_metadata,
-        parallelize=True,
-        patience=4,
-        store_tensorized_data_in_memory=True,
-    )
-    list = []
-    G = nx.Graph()
-    G.add_nodes_from([0,1,2])
-    G.add_edges_from([(1,2),(0,2)])
-    res = [0 for i in range(len(G.nodes))]
-    for i in nx.descendants(G,0):
-        res[i] = 1
-    res[0] = 1
-    graph:  XGraph = {"nodes": G.nodes,"edges": G.edges,"result": res}
-    list.append(graph)
-    sizes = [4,16, 20, 50,1024]
-    test_data = []
-    for i in sizes:
-        test_data.append(generate_random_graph(512,i))
-
-    for size, graphs in zip(sizes,test_data):
-        acc2 = model.report_accuracy(
-            training_data,
-            trainer.neural_module,
-            device=torch.device("cuda:0" if torch.cuda.is_available() else "cpu"),
-        )
-        print(f"Training accuracy:{size}  {acc2:%}")
-
-import networkx as nx
-XGraph = TypedDict(
-    "XGraph",
-    {
-        "nodes": nx.classes.reportviews.NodeView,
-        "edges": nx.classes.reportviews.EdgeView,
-        "result": list,
-    },
-)
-
-if __name__ == "__main__":
-    
-    training_data = generate_random_graph(2048,16)
-    
-    validation_data = generate_random_graph(1024,16)
-
-    run(training_data,validation_data)
+print("Training accuracy:"+str(predictions(X_train,model)))
+print("Validation accuracy:"+str(predictions(X_test,model))) 
+np.savetxt("/Users/benediktschesch/MyEnv/temp/training_infos.csv", np.array(training_infos), delimiter=',')

@@ -1,3 +1,8 @@
+#
+#We take the normal form of the graph and encode and tokenize it
+#Data augmentation techniques have been added
+#
+
 from aenum import convert
 import dace
 import dace.subsets
@@ -5,6 +10,7 @@ from dace.transformation.dataflow import vectorization
 import numpy as np
 import os, glob
 import tensorflow as tf
+import copy
 from tensorflow import keras
 from sklearn.model_selection import train_test_split
 import random
@@ -30,53 +36,83 @@ import sys
 sys.path.append("/Users/benediktschesch/MyEnv")
 from utils import Encoder,map2str,mem2str
 
-with open("/Users/benediktschesch/MyEnv/temp/Vect_graphs_normalized.pkl", "rb") as fp:    
+#Type one-hot encoding dictionary
+type_dic = {}
+type_dic["MapEntry"] =   torch.Tensor([1,0,0,0,0,0])
+type_dic["MapExit"] =    torch.Tensor([0,1,0,0,0,0])
+type_dic["Tasklet"] =    torch.Tensor([0,0,1,0,0,0])
+type_dic["AccessNode"] = torch.Tensor([0,0,0,1,0,0])
+type_dic["NestedSDFG"] = torch.Tensor([0,0,0,0,1,0])
+type_dic["Memlet"] =     torch.Tensor([0,0,0,0,0,1])
+
+#Open Data
+with open("/Users/benediktschesch/MyEnv/temp/Normalized_data.pkl", "rb") as fp:    
     raw_data = symbolic.SympyAwareUnpickler(fp).load()
+
+#Initialize Data
 max_num_map_entry = raw_data["max_num_map_entry"]
 max_num_param = raw_data["max_num_param"]
 data_points = raw_data["data"]
 max_free_symbols = raw_data["max_free_symbols"]
 encoder = Encoder(max_free_symbols,max_num_param,max_num_map_entry)
-X = []
-positive = 0
-total = 0
-for data_point in tqdm(data_points):
-    G = data_point["G"]
-    target_nodes = []
-    targets = []
-    type_dic = {}
-    type_dic["MapEntry"] =   torch.Tensor([1,0,0,0,0,0])
-    type_dic["MapExit"] =    torch.Tensor([0,1,0,0,0,0])
-    type_dic["Tasklet"] =    torch.Tensor([0,0,1,0,0,0])
-    type_dic["AccessNode"] = torch.Tensor([0,0,0,1,0,0])
-    type_dic["NestedSDFG"] = torch.Tensor([0,0,0,0,1,0])
-    type_dic["Memlet"] =     torch.Tensor([0,0,0,0,0,1])
-    highest_node_number = 0
-    for node in G.nodes(data = True):
-        if node[1]["attr"]["Type"] == "Tasklet":
-            target_nodes.append(node[0])
-            targets.append(node[1]["attr"]["Result"])
-            if node[1]["attr"]["Result"] == 1:
-                positive += 1
-            total += 1
-        if node[1]["attr"]["Type"] == "MapEntry":
-            node[1]["attr"]["data"] = torch.Tensor(encoder.encode(map2str(node[1]["attr"]["data"]))).type(torch.LongTensor)
-        node[1]["attr"]["Type"] = type_dic[node[1]["attr"]["Type"]]
-        highest_node_number = max(node[0],highest_node_number)
-    edges_to_add = []
-    node_to_add = []
-    for edge in G.edges(data = True):
-        highest_node_number += 1
-        data = edge[2]
-        dic = {"attr":{"data":torch.Tensor(encoder.encode(mem2str(data['attr']))).type(torch.LongTensor),"Type":type_dic["Memlet"]}}
-        node_to_add += [(highest_node_number,dic)]
-        edges_to_add += [(edge[0],highest_node_number),(highest_node_number,edge[1])]
-        del edge[2]["attr"]
-    G.add_nodes_from(node_to_add)
-    G.add_edges_from(edges_to_add)
-    targets = torch.Tensor(targets).type(torch.LongTensor)
-    if len(target_nodes) != 0:
-        X.append({"G":G,"target_nodes":target_nodes,"target":targets})
+data_train, data_test = train_test_split(data_points, test_size=0.2)
 
-with open("/Users/benediktschesch/MyEnv/temp/Vect_graphs_data.pkl", "wb") as fp:
-    symbolic.SympyAwarePickler(fp).dump({"X":X,"dim_in":len(encoder)})
+tasklets = 0
+map_entries = 0
+transformations_data = [[i.__name__,0,0] for (i,_) in raw_data["transforms"]]
+
+def gen_data(data_points):
+    X = []
+    for data_point in tqdm(data_points):
+        encoder.shuffle_sym()
+        for augment in range(4):
+            #Compute statisctics about transformations
+            for i in range(len(raw_data["transforms"])):
+                transformations_data[i][2] += len(data_point["list_trans"][i]["points"])
+                transformations_data[i][1] += sum(data_point["list_trans"][i]["results"])
+
+            
+            new_data = copy.deepcopy(data_point)
+            #Encode the nodes
+            for node in new_data["G"]["node_data"]:
+                if node["Type"] == "MapEntry":
+                    node["data"] = torch.Tensor(encoder.encode(node["data"])).type(torch.LongTensor)
+                if node["Type"] == "Memlet":
+                    node["data"] = torch.Tensor(encoder.encode(node["data"])).type(torch.LongTensor)
+                node["Type"] = type_dic[node["Type"]]
+            
+            new_data["G"]["adjacency_lists"] = [torch.Tensor(arr).type(torch.LongTensor).view(2,-1) for arr in new_data["G"]["adjacency_lists"]]
+            new_data["G"]["node_to_graph_idx"] = torch.zeros(len(new_data["G"]["node_data"])).type(torch.LongTensor)
+            new_data["G"]["reference_node_graph_idx"] = {}
+            new_data["G"]["reference_node_ids"] = {}
+            elem = 0
+            for i in new_data["G"]["adjacency_lists"]:
+                for j in i:
+                    if list(j) != []:
+                        elem = max(elem,max(j))
+
+            new_data["results"] = []
+            new_data["points"] = []
+            num_correct = sum(new_data["list_trans"][0]["results"])
+            total = len(new_data["list_trans"][0]["points"])
+            for dic2 in new_data["list_trans"]:
+                new_data["results"].append(torch.Tensor(dic2["results"]).type(torch.LongTensor))
+                new_data["points"].append(torch.Tensor(dic2["points"]).type(torch.LongTensor))
+            del new_data["list_trans"]
+            del new_data["file"]
+            X.append(new_data)
+            #if augment > 3:
+            #    if total == 0 or num_correct*1.0/total < 0.1:
+            #        break
+    return X
+
+
+raw_data["X_test"] = gen_data(data_test)
+raw_data["X_train"] = gen_data(data_train)
+del raw_data["data"]
+raw_data["transformations_data"] = transformations_data
+raw_data["dim_in"] = len(encoder)
+for i in raw_data["transformations_data"]:
+    print("Transformation: ",i[0]," Number of Training Points: ",i[2]," Positive Rate: ",i[1]*100.0/i[2],"%")
+with open("/Users/benediktschesch/MyEnv/temp/train_data.pkl", "wb") as fp:
+    pickle.dump(raw_data,fp)
