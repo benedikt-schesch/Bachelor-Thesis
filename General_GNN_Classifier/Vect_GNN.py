@@ -11,6 +11,7 @@ import torch
 from torch import nn
 from ptgnn.neuralmodels.gnn.graphneuralnetwork import GraphNeuralNetworkModel
 import networkx as nx
+from bert_pytorch import BERT
 
 
 def create_graph2class_gnn_model(hidden_state_size: int = 2, embedding_size = 2,dropout_rate: float = 0.1):
@@ -90,17 +91,26 @@ def create_graph2class_gnn_model(hidden_state_size: int = 2, embedding_size = 2,
             add_self_edges=False,
             stop_extending_minibatch_after_num_nodes=120000,
         )
-
+class OneHot(nn.Module):
+  def __init__(self,vocab_size,embedding_dim):
+    super().__init__()
+    self.vocab_size = vocab_size
+    assert vocab_size == embedding_dim
+  def forward(self,x):
+    result = torch.zeros((x.nelement(),self.vocab_size))
+    for index,i in enumerate(x[0]):
+        result[index][i] = 1
+    return result
 
 class GNN(nn.Module):
-    def __init__(self,dim_in,embedding_dim = 64,dim_hidden = 64,num_layers = 1,\
+    def __init__(self,vocab_size,embedding_dim = 64,dim_hidden = 64,num_layers = 1,\
         transforms = []):
         super().__init__()
-        self.dim_in = dim_in
+        self.vocab_size = vocab_size
         self.dim_hidden = dim_hidden
         self.embedding_dim = embedding_dim
         self.num_layers = num_layers
-        self.word_embeddings = nn.Embedding(dim_in, embedding_dim)
+        self.word_embeddings = OneHot(vocab_size,embedding_dim)#nn.Embedding(vocab_size, embedding_dim)
         self.map = nn.GRU(self.embedding_dim, dim_hidden,num_layers=num_layers)
         self.memlet = nn.GRU(self.embedding_dim, dim_hidden,num_layers=num_layers)
         self.num_trans = len(transforms)

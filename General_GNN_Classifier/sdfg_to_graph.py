@@ -5,6 +5,7 @@ from pickle import MARK
 from aenum import convert
 from numpy.lib.arraysetops import isin
 import dace
+import copy
 from dace.config import Config
 from dace.sdfg import SDFG, SDFGState
 from dace.sdfg import graph as gr, nodes as nd
@@ -84,7 +85,7 @@ max_num_param = 0
     # (Vectorization,[(Tasklet,"_tasklet")]),\
     # (MapExpansion,[(MapEntry,"_map_entry")]),\
     # (MapInterchange,[(MapEntry,"_outer_map_entry"),(MapEntry,"_inner_map_entry")])]
-transforms = [(Vectorization,[Vectorization._tasklet]),\
+transforms = [(Vectorization,[Vectorization._map_entry,Vectorization._tasklet,Vectorization._map_exit]),\
     (MapFusion,[MapFusion._first_map_exit,MapFusion._second_map_entry]),\
         (MapExpansion,[MapExpansion._map_entry]),\
         (MapInterchange,[MapInterchange._outer_map_entry,MapInterchange._inner_map_entry])]
@@ -106,11 +107,17 @@ for file in tqdm(paths):
         continue
     
     #Itterate over all SDFGS
-    for sdfg in file_sdfg.all_sdfgs_recursive():
+    for sdf in file_sdfg.all_sdfgs_recursive():
         for i in range(1):
             
             #Itterate over all states
-            for state in sdfg.states():
+            for index,state in enumerate(sdf.states()):
+
+                sdfg = copy.deepcopy(sdf)
+                to_remove = [sdf[i] for i in range(len(sdf.nodes())) if i != index]
+                for node in to_remove:
+                    sdf.remove_nodes(node)
+
                 #Skip empty states
                 if len(state.nodes()) == 0:
                     continue
@@ -199,8 +206,35 @@ for file in tqdm(paths):
                         break
                 if critical:
                     break
+                
 
+                opt = Optimizer(sdfg)
+                match = [i for i in opt.get_pattern_matches(patterns=[Vectorization])]
+                
                 list_transform_points = [{"results":[],"points":[]} for _ in transforms]
+                for transform in transforms:
+                    for tra in match:
+                        copy_sdfg = copy.deepcopy(sdfg)
+                        tra.apply(copy_sdfg)
+                        compiled = sdf.compile()
+                        dic = {}
+                        for k,v in sdf.arrays.items():
+                            if not v.transient:
+                                dic[k] = np.random.rand(*v.shape).astype(v.dtype())
+                        compiled(**dic)
+                        with open('results.log', 'r') as f:
+                            lines = f.readlines()
+                        time = 0.0
+                        for line in lines[1:]:
+                                time += float(str.split(line, sep='\t')[-1][:-1])
+                        time = time/len(lines[1:])
+                        point = []
+                        for elems in transforms[0][1]:
+                            point.append(tra.subgraph[elems])
+                        list_transform_points[0]["points"].append(point)
+                        list_transform_points[0]["result"].append(time)
+
+            
                 for i in range(len(transforms)):
                     pattern = transforms[i][0]
                     node_match=type_match
@@ -237,11 +271,9 @@ for file in tqdm(paths):
                                     raise
                                 match_found = False
                             valid = True
-                            list_transform_points[i]["results"].append(int(match_found))
-                            list_transform_points[i]["points"].append(point)
-
-
-                
+                            if match_found:
+                                list_transform_points[i]["results"].append(int(match_found))
+                                list_transform_points[i]["points"].append(point)
                 #Add graph if valid
                 if valid:
                     max_free_symbols = max(max_free_symbols,len(free_symbols.difference(params)))

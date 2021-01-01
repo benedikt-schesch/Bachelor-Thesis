@@ -65,7 +65,7 @@ def gen_data(data_points):
     X = []
     for data_point in tqdm(data_points):
         encoder.shuffle_sym()
-        for augment in range(4):
+        for augment in range(8):
             #Compute statisctics about transformations
             for i in range(len(raw_data["transforms"])):
                 transformations_data[i][2] += len(data_point["list_trans"][i]["points"])

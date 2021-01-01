@@ -1,0 +1,995 @@
+{
+  "type": "SDFG",
+  "attributes": {
+    "arg_types": [],
+    "constants_prop": {},
+    "_arrays": {
+      "A": {
+        "type": "Array",
+        "attributes": {
+          "allow_conflicts": false,
+          "strides": [
+            "1"
+          ],
+          "total_size": "1",
+          "offset": [
+            "0"
+          ],
+          "may_alias": false,
+          "alignment": 0,
+          "dtype": "float64",
+          "shape": [
+            "1"
+          ],
+          "transient": false,
+          "storage": "CPU_Heap",
+          "lifetime": "Scope",
+          "location": {},
+          "debuginfo": null
+        }
+      },
+      "B": {
+        "type": "Array",
+        "attributes": {
+          "allow_conflicts": false,
+          "strides": [
+            "1"
+          ],
+          "total_size": "1",
+          "offset": [
+            "0"
+          ],
+          "may_alias": false,
+          "alignment": 0,
+          "dtype": "float64",
+          "shape": [
+            "1"
+          ],
+          "transient": false,
+          "storage": "CPU_Heap",
+          "lifetime": "Scope",
+          "location": {},
+          "debuginfo": null
+        }
+      }
+    },
+    "symbols": {},
+    "global_code": {
+      "frame": {
+        "string_data": "",
+        "language": "CPP"
+      }
+    },
+    "init_code": {
+      "frame": {
+        "string_data": "",
+        "language": "CPP"
+      }
+    },
+    "exit_code": {
+      "frame": {
+        "string_data": "",
+        "language": "CPP"
+      }
+    },
+    "orig_sdfg": null,
+    "transformation_hist": [],
+    "name": "nest_subgraph"
+  },
+  "nodes": [
+    {
+      "type": "SDFGState",
+      "label": "MapState",
+      "id": 0,
+      "collapsed": false,
+      "scope_dict": {
+        "-1": [
+          0,
+          1,
+          2
+        ]
+      },
+      "nodes": [
+        {
+          "type": "AccessNode",
+          "label": "A",
+          "attributes": {
+            "access": "ReadOnly",
+            "setzero": false,
+            "debuginfo": {
+              "type": "DebugInfo",
+              "start_line": 9,
+              "end_line": 9,
+              "start_column": 4,
+              "end_column": 4,
+              "filename": "nest_subgraph_test.py"
+            },
+            "data": "A",
+            "in_connectors": {},
+            "out_connectors": {}
+          },
+          "id": 0,
+          "scope_entry": null,
+          "scope_exit": null
+        },
+        {
+          "type": "AccessNode",
+          "label": "B",
+          "attributes": {
+            "access": "WriteOnly",
+            "setzero": false,
+            "debuginfo": {
+              "type": "DebugInfo",
+              "start_line": 9,
+              "end_line": 9,
+              "start_column": 4,
+              "end_column": 4,
+              "filename": "nest_subgraph_test.py"
+            },
+            "data": "B",
+            "in_connectors": {},
+            "out_connectors": {}
+          },
+          "id": 1,
+          "scope_entry": null,
+          "scope_exit": null
+        },
+        {
+          "type": "NestedSDFG",
+          "label": "nested_MapState",
+          "attributes": {
+            "sdfg": {
+              "type": "SDFG",
+              "attributes": {
+                "arg_types": [],
+                "constants_prop": {},
+                "_arrays": {
+                  "A": {
+                    "type": "Array",
+                    "attributes": {
+                      "allow_conflicts": false,
+                      "strides": [
+                        "1"
+                      ],
+                      "total_size": "1",
+                      "offset": [
+                        "0"
+                      ],
+                      "may_alias": false,
+                      "alignment": 0,
+                      "dtype": "float64",
+                      "shape": [
+                        "1"
+                      ],
+                      "transient": false,
+                      "storage": "CPU_Heap",
+                      "lifetime": "Scope",
+                      "location": {},
+                      "debuginfo": null
+                    }
+                  },
+                  "B": {
+                    "type": "Array",
+                    "attributes": {
+                      "allow_conflicts": false,
+                      "strides": [
+                        "1"
+                      ],
+                      "total_size": "1",
+                      "offset": [
+                        "0"
+                      ],
+                      "may_alias": false,
+                      "alignment": 0,
+                      "dtype": "float64",
+                      "shape": [
+                        "1"
+                      ],
+                      "transient": false,
+                      "storage": "CPU_Heap",
+                      "lifetime": "Scope",
+                      "location": {},
+                      "debuginfo": null
+                    }
+                  }
+                },
+                "symbols": {},
+                "global_code": {
+                  "frame": {
+                    "string_data": "",
+                    "language": "CPP"
+                  }
+                },
+                "init_code": {
+                  "frame": {
+                    "string_data": "",
+                    "language": "CPP"
+                  }
+                },
+                "exit_code": {
+                  "frame": {
+                    "string_data": "",
+                    "language": "CPP"
+                  }
+                },
+                "orig_sdfg": null,
+                "transformation_hist": [],
+                "name": "nested_MapState"
+              },
+              "nodes": [
+                {
+                  "type": "SDFGState",
+                  "label": "state_0",
+                  "id": 0,
+                  "collapsed": false,
+                  "scope_dict": {
+                    "-1": [
+                      0,
+                      2,
+                      3
+                    ],
+                    "0": [
+                      1,
+                      4
+                    ]
+                  },
+                  "nodes": [
+                    {
+                      "type": "MapEntry",
+                      "label": "nest_subgraph_9[i=0]",
+                      "attributes": {
+                        "label": "nest_subgraph_9",
+                        "params": [
+                          "i"
+                        ],
+                        "range": {
+                          "type": "Range",
+                          "ranges": [
+                            {
+                              "start": "0",
+                              "end": "0",
+                              "step": {
+                                "main": "1",
+                                "approx": "1"
+                              },
+                              "tile": "1"
+                            }
+                          ]
+                        },
+                        "schedule": "CPU_Multicore",
+                        "unroll": false,
+                        "collapse": 1,
+                        "debuginfo": {
+                          "type": "DebugInfo",
+                          "start_line": 9,
+                          "end_line": 9,
+                          "start_column": 4,
+                          "end_column": 4,
+                          "filename": "nest_subgraph_test.py"
+                        },
+                        "is_collapsed": false,
+                        "instrument": "No_Instrumentation",
+                        "in_connectors": {
+                          "IN_1": "float64"
+                        },
+                        "out_connectors": {
+                          "OUT_1": "float64"
+                        }
+                      },
+                      "id": 0,
+                      "scope_entry": null,
+                      "scope_exit": "1"
+                    },
+                    {
+                      "type": "MapExit",
+                      "label": "nest_subgraph_9[i=0]",
+                      "attributes": {
+                        "in_connectors": {
+                          "IN_1": "float64"
+                        },
+                        "out_connectors": {
+                          "OUT_1": "float64"
+                        }
+                      },
+                      "id": 1,
+                      "scope_entry": "0",
+                      "scope_exit": "1"
+                    },
+                    {
+                      "type": "AccessNode",
+                      "label": "A",
+                      "attributes": {
+                        "access": "ReadOnly",
+                        "setzero": false,
+                        "debuginfo": {
+                          "type": "DebugInfo",
+                          "start_line": 196,
+                          "end_line": 196,
+                          "start_column": 0,
+                          "end_column": 0,
+                          "filename": "/Users/benediktschesch/MyEnv/lib/python3.7/site-packages/dace/transformation/helpers.py"
+                        },
+                        "data": "A",
+                        "in_connectors": {},
+                        "out_connectors": {}
+                      },
+                      "id": 2,
+                      "scope_entry": null,
+                      "scope_exit": null
+                    },
+                    {
+                      "type": "AccessNode",
+                      "label": "B",
+                      "attributes": {
+                        "access": "WriteOnly",
+                        "setzero": false,
+                        "debuginfo": {
+                          "type": "DebugInfo",
+                          "start_line": 203,
+                          "end_line": 203,
+                          "start_column": 0,
+                          "end_column": 0,
+                          "filename": "/Users/benediktschesch/MyEnv/lib/python3.7/site-packages/dace/transformation/helpers.py"
+                        },
+                        "data": "B",
+                        "in_connectors": {},
+                        "out_connectors": {}
+                      },
+                      "id": 3,
+                      "scope_entry": null,
+                      "scope_exit": null
+                    },
+                    {
+                      "type": "NestedSDFG",
+                      "label": "nested_state_0",
+                      "attributes": {
+                        "sdfg": {
+                          "type": "SDFG",
+                          "attributes": {
+                            "arg_types": [],
+                            "constants_prop": {},
+                            "_arrays": {
+                              "A": {
+                                "type": "Array",
+                                "attributes": {
+                                  "allow_conflicts": false,
+                                  "strides": [
+                                    "1"
+                                  ],
+                                  "total_size": "1",
+                                  "offset": [
+                                    "0"
+                                  ],
+                                  "may_alias": false,
+                                  "alignment": 0,
+                                  "dtype": "float64",
+                                  "shape": [
+                                    "1"
+                                  ],
+                                  "transient": false,
+                                  "storage": "CPU_Heap",
+                                  "lifetime": "Scope",
+                                  "location": {},
+                                  "debuginfo": null
+                                }
+                              },
+                              "B": {
+                                "type": "Array",
+                                "attributes": {
+                                  "allow_conflicts": false,
+                                  "strides": [
+                                    "1"
+                                  ],
+                                  "total_size": "1",
+                                  "offset": [
+                                    "0"
+                                  ],
+                                  "may_alias": false,
+                                  "alignment": 0,
+                                  "dtype": "float64",
+                                  "shape": [
+                                    "1"
+                                  ],
+                                  "transient": false,
+                                  "storage": "CPU_Heap",
+                                  "lifetime": "Scope",
+                                  "location": {},
+                                  "debuginfo": null
+                                }
+                              }
+                            },
+                            "symbols": {},
+                            "global_code": {
+                              "frame": {
+                                "string_data": "",
+                                "language": "CPP"
+                              }
+                            },
+                            "init_code": {
+                              "frame": {
+                                "string_data": "",
+                                "language": "CPP"
+                              }
+                            },
+                            "exit_code": {
+                              "frame": {
+                                "string_data": "",
+                                "language": "CPP"
+                              }
+                            },
+                            "orig_sdfg": null,
+                            "transformation_hist": [],
+                            "name": "nested_state_0"
+                          },
+                          "nodes": [
+                            {
+                              "type": "SDFGState",
+                              "label": "state_0",
+                              "id": 0,
+                              "collapsed": false,
+                              "scope_dict": {
+                                "-1": [
+                                  0,
+                                  1,
+                                  2
+                                ]
+                              },
+                              "nodes": [
+                                {
+                                  "type": "Tasklet",
+                                  "label": "nest_subgraph_10",
+                                  "attributes": {
+                                    "code": {
+                                      "string_data": "b = a",
+                                      "language": "Python"
+                                    },
+                                    "debuginfo": {
+                                      "type": "DebugInfo",
+                                      "start_line": 10,
+                                      "end_line": 13,
+                                      "start_column": 8,
+                                      "end_column": 12,
+                                      "filename": "nest_subgraph_test.py"
+                                    },
+                                    "instrument": "No_Instrumentation",
+                                    "label": "nest_subgraph_10",
+                                    "location": {},
+                                    "environments": [],
+                                    "in_connectors": {
+                                      "a": "float64"
+                                    },
+                                    "out_connectors": {
+                                      "b": "float64"
+                                    }
+                                  },
+                                  "id": 0,
+                                  "scope_entry": null,
+                                  "scope_exit": null
+                                },
+                                {
+                                  "type": "AccessNode",
+                                  "label": "A",
+                                  "attributes": {
+                                    "access": "ReadOnly",
+                                    "setzero": false,
+                                    "debuginfo": {
+                                      "type": "DebugInfo",
+                                      "start_line": 196,
+                                      "end_line": 196,
+                                      "start_column": 0,
+                                      "end_column": 0,
+                                      "filename": "/Users/benediktschesch/MyEnv/lib/python3.7/site-packages/dace/transformation/helpers.py"
+                                    },
+                                    "data": "A",
+                                    "in_connectors": {},
+                                    "out_connectors": {}
+                                  },
+                                  "id": 1,
+                                  "scope_entry": null,
+                                  "scope_exit": null
+                                },
+                                {
+                                  "type": "AccessNode",
+                                  "label": "B",
+                                  "attributes": {
+                                    "access": "WriteOnly",
+                                    "setzero": false,
+                                    "debuginfo": {
+                                      "type": "DebugInfo",
+                                      "start_line": 203,
+                                      "end_line": 203,
+                                      "start_column": 0,
+                                      "end_column": 0,
+                                      "filename": "/Users/benediktschesch/MyEnv/lib/python3.7/site-packages/dace/transformation/helpers.py"
+                                    },
+                                    "data": "B",
+                                    "in_connectors": {},
+                                    "out_connectors": {}
+                                  },
+                                  "id": 2,
+                                  "scope_entry": null,
+                                  "scope_exit": null
+                                }
+                              ],
+                              "edges": [
+                                {
+                                  "type": "MultiConnectorEdge",
+                                  "attributes": {
+                                    "data": {
+                                      "type": "Memlet",
+                                      "attributes": {
+                                        "volume": "1",
+                                        "dynamic": false,
+                                        "subset": {
+                                          "type": "Range",
+                                          "ranges": [
+                                            {
+                                              "start": "0",
+                                              "end": "0",
+                                              "step": "1",
+                                              "tile": "1"
+                                            }
+                                          ]
+                                        },
+                                        "other_subset": null,
+                                        "data": "A",
+                                        "wcr": null,
+                                        "debuginfo": null,
+                                        "wcr_nonatomic": false,
+                                        "allow_oob": false,
+                                        "src_subset": {
+                                          "type": "Range",
+                                          "ranges": [
+                                            {
+                                              "start": "0",
+                                              "end": "0",
+                                              "step": "1",
+                                              "tile": "1"
+                                            }
+                                          ]
+                                        },
+                                        "dst_subset": null,
+                                        "num_accesses": "1"
+                                      }
+                                    }
+                                  },
+                                  "src": "1",
+                                  "dst": "0",
+                                  "dst_connector": "a",
+                                  "src_connector": null
+                                },
+                                {
+                                  "type": "MultiConnectorEdge",
+                                  "attributes": {
+                                    "data": {
+                                      "type": "Memlet",
+                                      "attributes": {
+                                        "volume": "1",
+                                        "dynamic": false,
+                                        "subset": {
+                                          "type": "Range",
+                                          "ranges": [
+                                            {
+                                              "start": "0",
+                                              "end": "0",
+                                              "step": "1",
+                                              "tile": "1"
+                                            }
+                                          ]
+                                        },
+                                        "other_subset": null,
+                                        "data": "B",
+                                        "wcr": null,
+                                        "debuginfo": null,
+                                        "wcr_nonatomic": false,
+                                        "allow_oob": false,
+                                        "src_subset": null,
+                                        "dst_subset": {
+                                          "type": "Range",
+                                          "ranges": [
+                                            {
+                                              "start": "0",
+                                              "end": "0",
+                                              "step": "1",
+                                              "tile": "1"
+                                            }
+                                          ]
+                                        },
+                                        "num_accesses": "1"
+                                      }
+                                    }
+                                  },
+                                  "src": "0",
+                                  "dst": "2",
+                                  "dst_connector": null,
+                                  "src_connector": "b"
+                                }
+                              ],
+                              "attributes": {
+                                "is_collapsed": false,
+                                "nosync": false,
+                                "instrument": "No_Instrumentation",
+                                "executions": "0",
+                                "dynamic_executions": true,
+                                "ranges": {},
+                                "location": {}
+                              }
+                            }
+                          ],
+                          "edges": [],
+                          "sdfg_list_id": 2
+                        },
+                        "schedule": "CPU_Multicore",
+                        "symbol_mapping": {},
+                        "debuginfo": {
+                          "type": "DebugInfo",
+                          "start_line": 221,
+                          "end_line": 221,
+                          "start_column": 0,
+                          "end_column": 0,
+                          "filename": "/Users/benediktschesch/MyEnv/lib/python3.7/site-packages/dace/transformation/helpers.py"
+                        },
+                        "is_collapsed": false,
+                        "instrument": "No_Instrumentation",
+                        "label": "nested_state_0",
+                        "location": {},
+                        "environments": [],
+                        "in_connectors": {
+                          "A": {
+                            "type": "pointer",
+                            "dtype": "float64"
+                          }
+                        },
+                        "out_connectors": {
+                          "B": {
+                            "type": "pointer",
+                            "dtype": "float64"
+                          }
+                        }
+                      },
+                      "id": 4,
+                      "scope_entry": "0",
+                      "scope_exit": "1"
+                    }
+                  ],
+                  "edges": [
+                    {
+                      "type": "MultiConnectorEdge",
+                      "attributes": {
+                        "data": {
+                          "type": "Memlet",
+                          "attributes": {
+                            "volume": "1",
+                            "dynamic": false,
+                            "subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "0",
+                                  "end": "0",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "other_subset": null,
+                            "data": "A",
+                            "wcr": null,
+                            "debuginfo": null,
+                            "wcr_nonatomic": false,
+                            "allow_oob": false,
+                            "src_subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "0",
+                                  "end": "0",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "dst_subset": null,
+                            "num_accesses": "1"
+                          }
+                        }
+                      },
+                      "src": "2",
+                      "dst": "0",
+                      "dst_connector": "IN_1",
+                      "src_connector": null
+                    },
+                    {
+                      "type": "MultiConnectorEdge",
+                      "attributes": {
+                        "data": {
+                          "type": "Memlet",
+                          "attributes": {
+                            "volume": "1",
+                            "dynamic": false,
+                            "subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "i",
+                                  "end": "i",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "other_subset": null,
+                            "data": "B",
+                            "wcr": null,
+                            "debuginfo": null,
+                            "wcr_nonatomic": false,
+                            "allow_oob": false,
+                            "src_subset": null,
+                            "dst_subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "i",
+                                  "end": "i",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "num_accesses": "1"
+                          }
+                        }
+                      },
+                      "src": "4",
+                      "dst": "1",
+                      "dst_connector": "IN_1",
+                      "src_connector": "B"
+                    },
+                    {
+                      "type": "MultiConnectorEdge",
+                      "attributes": {
+                        "data": {
+                          "type": "Memlet",
+                          "attributes": {
+                            "volume": "1",
+                            "dynamic": false,
+                            "subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "0",
+                                  "end": "0",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "other_subset": null,
+                            "data": "B",
+                            "wcr": null,
+                            "debuginfo": null,
+                            "wcr_nonatomic": false,
+                            "allow_oob": false,
+                            "src_subset": null,
+                            "dst_subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "0",
+                                  "end": "0",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "num_accesses": "1"
+                          }
+                        }
+                      },
+                      "src": "1",
+                      "dst": "3",
+                      "dst_connector": null,
+                      "src_connector": "OUT_1"
+                    },
+                    {
+                      "type": "MultiConnectorEdge",
+                      "attributes": {
+                        "data": {
+                          "type": "Memlet",
+                          "attributes": {
+                            "volume": "1",
+                            "dynamic": false,
+                            "subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "i",
+                                  "end": "i",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "other_subset": null,
+                            "data": "A",
+                            "wcr": null,
+                            "debuginfo": null,
+                            "wcr_nonatomic": false,
+                            "allow_oob": false,
+                            "src_subset": {
+                              "type": "Range",
+                              "ranges": [
+                                {
+                                  "start": "i",
+                                  "end": "i",
+                                  "step": "1",
+                                  "tile": "1"
+                                }
+                              ]
+                            },
+                            "dst_subset": null,
+                            "num_accesses": "1"
+                          }
+                        }
+                      },
+                      "src": "0",
+                      "dst": "4",
+                      "dst_connector": "A",
+                      "src_connector": "OUT_1"
+                    }
+                  ],
+                  "attributes": {
+                    "is_collapsed": false,
+                    "nosync": false,
+                    "instrument": "No_Instrumentation",
+                    "executions": "0",
+                    "dynamic_executions": true,
+                    "ranges": {},
+                    "location": {}
+                  }
+                }
+              ],
+              "edges": [],
+              "sdfg_list_id": 1
+            },
+            "schedule": null,
+            "symbol_mapping": {},
+            "debuginfo": {
+              "type": "DebugInfo",
+              "start_line": 221,
+              "end_line": 221,
+              "start_column": 0,
+              "end_column": 0,
+              "filename": "/Users/benediktschesch/MyEnv/lib/python3.7/site-packages/dace/transformation/helpers.py"
+            },
+            "is_collapsed": false,
+            "instrument": "No_Instrumentation",
+            "label": "nested_MapState",
+            "location": {},
+            "environments": [],
+            "in_connectors": {
+              "A": {
+                "type": "pointer",
+                "dtype": "float64"
+              }
+            },
+            "out_connectors": {
+              "B": {
+                "type": "pointer",
+                "dtype": "float64"
+              }
+            }
+          },
+          "id": 2,
+          "scope_entry": null,
+          "scope_exit": null
+        }
+      ],
+      "edges": [
+        {
+          "type": "MultiConnectorEdge",
+          "attributes": {
+            "data": {
+              "type": "Memlet",
+              "attributes": {
+                "volume": "1",
+                "dynamic": false,
+                "subset": {
+                  "type": "Range",
+                  "ranges": [
+                    {
+                      "start": "0",
+                      "end": "0",
+                      "step": "1",
+                      "tile": "1"
+                    }
+                  ]
+                },
+                "other_subset": null,
+                "data": "A",
+                "wcr": null,
+                "debuginfo": null,
+                "wcr_nonatomic": false,
+                "allow_oob": false,
+                "src_subset": {
+                  "type": "Range",
+                  "ranges": [
+                    {
+                      "start": "0",
+                      "end": "0",
+                      "step": "1",
+                      "tile": "1"
+                    }
+                  ]
+                },
+                "dst_subset": null,
+                "num_accesses": "1"
+              }
+            }
+          },
+          "src": "0",
+          "dst": "2",
+          "dst_connector": "A",
+          "src_connector": null
+        },
+        {
+          "type": "MultiConnectorEdge",
+          "attributes": {
+            "data": {
+              "type": "Memlet",
+              "attributes": {
+                "volume": "1",
+                "dynamic": false,
+                "subset": {
+                  "type": "Range",
+                  "ranges": [
+                    {
+                      "start": "0",
+                      "end": "0",
+                      "step": "1",
+                      "tile": "1"
+                    }
+                  ]
+                },
+                "other_subset": null,
+                "data": "B",
+                "wcr": null,
+                "debuginfo": null,
+                "wcr_nonatomic": false,
+                "allow_oob": false,
+                "src_subset": null,
+                "dst_subset": {
+                  "type": "Range",
+                  "ranges": [
+                    {
+                      "start": "0",
+                      "end": "0",
+                      "step": "1",
+                      "tile": "1"
+                    }
+                  ]
+                },
+                "num_accesses": "1"
+              }
+            }
+          },
+          "src": "2",
+          "dst": "1",
+          "dst_connector": null,
+          "src_connector": "B"
+        }
+      ],
+      "attributes": {
+        "is_collapsed": false,
+        "nosync": false,
+        "instrument": "No_Instrumentation",
+        "executions": "0",
+        "dynamic_executions": true,
+        "ranges": {},
+        "location": {}
+      }
+    }
+  ],
+  "edges": [],
+  "sdfg_list_id": 0
+}

@@ -1,0 +1,1 @@
+/usr/local/bin/g++-9 -std=c++14 -fPIC -Wall -Wextra -O3 -march=native -ffast-math -Wno-unused-parameter -Wno-unused-label -fopenmp  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -dynamiclib -Wl,-headerpad_max_install_names -o libdacestub_slowmm.dylib -install_name @rpath/libdacestub_slowmm.dylib CMakeFiles/dacestub_slowmm.dir/tools/dacestub.cpp.o 

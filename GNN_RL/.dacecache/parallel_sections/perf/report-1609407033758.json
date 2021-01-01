@@ -1,0 +1,6 @@
+{
+  "timer_Map compute_map": [2.006],
+  "timer_Map read_map_a": [0.697],
+  "timer_Map read_map_b": [0.76],
+  "timer_Map write_map": [2.008]
+}

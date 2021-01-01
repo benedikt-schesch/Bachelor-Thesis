@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/GNN_RL/.dacecache/dace_softmax/src/cpu/dace_softmax.cpp
+chrono
+-
+chrono
+-
+chrono
+-
+

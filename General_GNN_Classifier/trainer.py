@@ -84,14 +84,14 @@ def predictions(loader,model,transforms,list):
 trainloader = DataLoader(X_train,batch_size=1)
 testloader = DataLoader(X_test,batch_size=1)
 
-model = GNN(dim_in = max_vocab,dim_hidden = 50,embedding_dim = 50,num_layers = 1,\
+model = GNN(vocab_size = max_vocab,dim_hidden = 100,embedding_dim = max_vocab,num_layers = 3,\
     transforms = [len(i) for (_,i) in raw_data["transforms"]])
 model.to(device)
 model.compute_metada(trainloader,device)
 optimizer = optim.SGD(model.parameters(), lr=0.008)
 criterion = nn.CrossEntropyLoss()
 epochs = 50
-
+print("Number of Parameters:",sum(p.numel() for p in model.parameters()))
 
 def adjust_optim(optimizer, epoch):
     if epoch < 15:
@@ -103,8 +103,6 @@ def adjust_optim(optimizer, epoch):
     elif epoch < 50:  
         optimizer.param_groups[0]['lr'] = 0.0005
 
-predictions(trainloader,model,transforms,training_infos[3])
-print("done")
 for e in range(epochs):
     running_loss = 0
     points = 0
@@ -137,7 +135,6 @@ for e in range(epochs):
         loss.backward()
         optimizer.step()
         running_loss += loss.item()
-        assert not math.isnan(running_loss)
     print("Epoch: {}/{} Training loss: {}".format(e+1,epochs,"{:.6f}".format(running_loss/points)))
     if e % 9 == 0:
         print("====================================================")
@@ -150,9 +147,9 @@ for e in range(epochs):
         print("====================================================")
     adjust_optim(optimizer,e)
 print("Training accuracy:")
-predictions(trainloader,model,transforms)
+predictions(trainloader,model,transforms,[])
 print("Validation accuracy:")
-predictions(testloader,model,transforms)
+predictions(testloader,model,transforms,[])
 np.savetxt("/Users/benediktschesch/MyEnv/temp/training_infos.csv", np.array(training_infos), delimiter=',')
 torch.save(model.state_dict(),"model.pt")
 print("Model has been saved")

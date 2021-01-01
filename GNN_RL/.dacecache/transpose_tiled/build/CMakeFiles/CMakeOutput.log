@@ -1,0 +1,435 @@
+The system is: Darwin - 20.2.0 - x86_64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: /Library/Developer/CommandLineTools/usr/bin/cc 
+Build flags: 
+Id flags: -c 
+
+The output was:
+0
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.o"
+
+The C compiler identification is AppleClang, found in "/Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/GNN_RL/.dacecache/transpose_tiled/build/CMakeFiles/3.18.4/CompilerIdC/CMakeCCompilerId.o"
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: /usr/local/bin/g++-9 
+Build flags: -std=c++14;-fPIC;-Wall;-Wextra;-O3;-march=native;-ffast-math;-Wno-unused-parameter;-Wno-unused-label
+Id flags: -c 
+
+The output was:
+0
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.o"
+
+The CXX compiler identification is GNU, found in "/Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/GNN_RL/.dacecache/transpose_tiled/build/CMakeFiles/3.18.4/CompilerIdCXX/CMakeCXXCompilerId.o"
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: /Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/GNN_RL/.dacecache/transpose_tiled/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_39e34/fast && /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_39e34.dir/build.make CMakeFiles/cmTC_39e34.dir/build
+Building C object CMakeFiles/cmTC_39e34.dir/CMakeCCompilerABI.c.o
+/Library/Developer/CommandLineTools/usr/bin/cc   -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk   -v -Wl,-v -o CMakeFiles/cmTC_39e34.dir/CMakeCCompilerABI.c.o -c "/Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/lib/python3.7/site-packages/cmake/data/CMake.app/Contents/share/cmake-3.18/Modules/CMakeCCompilerABI.c"
+Apple clang version 11.0.0 (clang-1100.0.33.17)
+Target: x86_64-apple-darwin20.2.0
+Thread model: posix
+InstalledDir: /Library/Developer/CommandLineTools/usr/bin
+clang: warning: -Wl,-v: 'linker' input unused [-Wunused-command-line-argument]
+ "/Library/Developer/CommandLineTools/usr/bin/clang" -cc1 -triple x86_64-apple-macosx10.15.0 -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -emit-obj -mrelax-all -disable-free -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -mthread-model posix -mdisable-fp-elim -fno-strict-return -masm-verbose -munwind-tables -target-sdk-version=10.15 -target-cpu penryn -dwarf-column-info -debugger-tuning=lldb -ggnu-pubnames -target-linker-version 530 -v -coverage-notes-file /Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/GNN_RL/.dacecache/transpose_tiled/build/CMakeFiles/CMakeTmp/CMakeFiles/cmTC_39e34.dir/CMakeCCompilerABI.c.gcno -resource-dir /Library/Developer/CommandLineTools/usr/lib/clang/11.0.0 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -Wno-framework-include-private-from-public -Wno-atimport-in-framework-header -Wno-extra-semi-stmt -Wno-quoted-include-in-framework-header -fdebug-compilation-dir /Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/GNN_RL/.dacecache/transpose_tiled/build/CMakeFiles/CMakeTmp -ferror-limit 19 -fmessage-length 0 -stack-protector 1 -fstack-check -mdarwin-stkchk-strong-link -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fobjc-runtime=macosx-10.15.0 -fmax-type-align=16 -fdiagnostics-show-option -o CMakeFiles/cmTC_39e34.dir/CMakeCCompilerABI.c.o -x c /Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/lib/python3.7/site-packages/cmake/data/CMake.app/Contents/share/cmake-3.18/Modules/CMakeCCompilerABI.c
+clang -cc1 version 11.0.0 (clang-1100.0.33.17) default target x86_64-apple-darwin20.2.0
+ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/local/include"
+ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/Library/Frameworks"
+#include "..." search starts here:
+#include <...> search starts here:
+ /Library/Developer/CommandLineTools/usr/lib/clang/11.0.0/include
+ /Library/Developer/CommandLineTools/usr/include
+ /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/include
+ /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks (framework directory)
+End of search list.
+Linking C executable cmTC_39e34
+"/Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/lib/python3.7/site-packages/cmake/data/CMake.app/Contents/bin/cmake" -E cmake_link_script CMakeFiles/cmTC_39e34.dir/link.txt --verbose=1
+/Library/Developer/CommandLineTools/usr/bin/cc  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names  -v -Wl,-v CMakeFiles/cmTC_39e34.dir/CMakeCCompilerABI.c.o -o cmTC_39e34 
+Apple clang version 11.0.0 (clang-1100.0.33.17)
+Target: x86_64-apple-darwin20.2.0
+Thread model: posix
+InstalledDir: /Library/Developer/CommandLineTools/usr/bin
+ "/Library/Developer/CommandLineTools/usr/bin/ld" -demangle -lto_library /Library/Developer/CommandLineTools/usr/lib/libLTO.dylib -dynamic -arch x86_64 -macosx_version_min 10.15.0 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -o cmTC_39e34 -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_39e34.dir/CMakeCCompilerABI.c.o -lSystem /Library/Developer/CommandLineTools/usr/lib/clang/11.0.0/lib/darwin/libclang_rt.osx.a
+@(#)PROGRAM:ld  PROJECT:ld64-530
+BUILD 18:57:17 Dec 13 2019
+configured to support archs: armv6 armv7 armv7s arm64 arm64e arm64_32 i386 x86_64 x86_64h armv6m armv7k armv7m armv7em
+Library search paths:
+	/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/lib
+Framework search paths:
+	/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks/
+
+
+
+Parsed C implicit include dir info from above output: rv=done
+  found start of include info
+  found start of implicit include info
+    add: [/Library/Developer/CommandLineTools/usr/lib/clang/11.0.0/include]
+    add: [/Library/Developer/CommandLineTools/usr/include]
+    add: [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/include]
+  end of search list found
+  collapse include dir [/Library/Developer/CommandLineTools/usr/lib/clang/11.0.0/include] ==> [/Library/Developer/CommandLineTools/usr/lib/clang/11.0.0/include]
+  collapse include dir [/Library/Developer/CommandLineTools/usr/include] ==> [/Library/Developer/CommandLineTools/usr/include]
+  collapse include dir [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/include] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/include]
+  implicit include dirs: [/Library/Developer/CommandLineTools/usr/lib/clang/11.0.0/include;/Library/Developer/CommandLineTools/usr/include;/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/include]
+
+
+Parsed C implicit link information from above output:
+  link line regex: [^( *|.*[/\])(g\+\+-9|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/GNN_RL/.dacecache/transpose_tiled/build/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command(s):/usr/bin/make cmTC_39e34/fast && /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_39e34.dir/build.make CMakeFiles/cmTC_39e34.dir/build]
+  ignore line: [Building C object CMakeFiles/cmTC_39e34.dir/CMakeCCompilerABI.c.o]
+  ignore line: [/Library/Developer/CommandLineTools/usr/bin/cc   -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk   -v -Wl -v -o CMakeFiles/cmTC_39e34.dir/CMakeCCompilerABI.c.o -c "/Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/lib/python3.7/site-packages/cmake/data/CMake.app/Contents/share/cmake-3.18/Modules/CMakeCCompilerABI.c"]
+  ignore line: [Apple clang version 11.0.0 (clang-1100.0.33.17)]
+  ignore line: [Target: x86_64-apple-darwin20.2.0]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /Library/Developer/CommandLineTools/usr/bin]
+  ignore line: [clang: warning: -Wl -v: 'linker' input unused [-Wunused-command-line-argument]]
+  ignore line: [ "/Library/Developer/CommandLineTools/usr/bin/clang" -cc1 -triple x86_64-apple-macosx10.15.0 -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -emit-obj -mrelax-all -disable-free -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -mthread-model posix -mdisable-fp-elim -fno-strict-return -masm-verbose -munwind-tables -target-sdk-version=10.15 -target-cpu penryn -dwarf-column-info -debugger-tuning=lldb -ggnu-pubnames -target-linker-version 530 -v -coverage-notes-file /Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/GNN_RL/.dacecache/transpose_tiled/build/CMakeFiles/CMakeTmp/CMakeFiles/cmTC_39e34.dir/CMakeCCompilerABI.c.gcno -resource-dir /Library/Developer/CommandLineTools/usr/lib/clang/11.0.0 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -Wno-framework-include-private-from-public -Wno-atimport-in-framework-header -Wno-extra-semi-stmt -Wno-quoted-include-in-framework-header -fdebug-compilation-dir /Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/GNN_RL/.dacecache/transpose_tiled/build/CMakeFiles/CMakeTmp -ferror-limit 19 -fmessage-length 0 -stack-protector 1 -fstack-check -mdarwin-stkchk-strong-link -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fobjc-runtime=macosx-10.15.0 -fmax-type-align=16 -fdiagnostics-show-option -o CMakeFiles/cmTC_39e34.dir/CMakeCCompilerABI.c.o -x c /Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/lib/python3.7/site-packages/cmake/data/CMake.app/Contents/share/cmake-3.18/Modules/CMakeCCompilerABI.c]
+  ignore line: [clang -cc1 version 11.0.0 (clang-1100.0.33.17) default target x86_64-apple-darwin20.2.0]
+  ignore line: [ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/local/include"]
+  ignore line: [ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/Library/Frameworks"]
+  ignore line: [#include "..." search starts here:]
+  ignore line: [#include <...> search starts here:]
+  ignore line: [ /Library/Developer/CommandLineTools/usr/lib/clang/11.0.0/include]
+  ignore line: [ /Library/Developer/CommandLineTools/usr/include]
+  ignore line: [ /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/include]
+  ignore line: [ /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks (framework directory)]
+  ignore line: [End of search list.]
+  ignore line: [Linking C executable cmTC_39e34]
+  ignore line: ["/Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/lib/python3.7/site-packages/cmake/data/CMake.app/Contents/bin/cmake" -E cmake_link_script CMakeFiles/cmTC_39e34.dir/link.txt --verbose=1]
+  ignore line: [/Library/Developer/CommandLineTools/usr/bin/cc  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -Wl -search_paths_first -Wl -headerpad_max_install_names  -v -Wl -v CMakeFiles/cmTC_39e34.dir/CMakeCCompilerABI.c.o -o cmTC_39e34 ]
+  ignore line: [Apple clang version 11.0.0 (clang-1100.0.33.17)]
+  ignore line: [Target: x86_64-apple-darwin20.2.0]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /Library/Developer/CommandLineTools/usr/bin]
+  link line: [ "/Library/Developer/CommandLineTools/usr/bin/ld" -demangle -lto_library /Library/Developer/CommandLineTools/usr/lib/libLTO.dylib -dynamic -arch x86_64 -macosx_version_min 10.15.0 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -o cmTC_39e34 -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_39e34.dir/CMakeCCompilerABI.c.o -lSystem /Library/Developer/CommandLineTools/usr/lib/clang/11.0.0/lib/darwin/libclang_rt.osx.a]
+    arg [/Library/Developer/CommandLineTools/usr/bin/ld] ==> ignore
+    arg [-demangle] ==> ignore
+    arg [-lto_library] ==> ignore, skip following value
+    arg [/Library/Developer/CommandLineTools/usr/lib/libLTO.dylib] ==> skip value of -lto_library
+    arg [-dynamic] ==> ignore
+    arg [-arch] ==> ignore
+    arg [x86_64] ==> ignore
+    arg [-macosx_version_min] ==> ignore
+    arg [10.15.0] ==> ignore
+    arg [-syslibroot] ==> ignore
+    arg [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_39e34] ==> ignore
+    arg [-search_paths_first] ==> ignore
+    arg [-headerpad_max_install_names] ==> ignore
+    arg [-v] ==> ignore
+    arg [CMakeFiles/cmTC_39e34.dir/CMakeCCompilerABI.c.o] ==> ignore
+    arg [-lSystem] ==> lib [System]
+    arg [/Library/Developer/CommandLineTools/usr/lib/clang/11.0.0/lib/darwin/libclang_rt.osx.a] ==> lib [/Library/Developer/CommandLineTools/usr/lib/clang/11.0.0/lib/darwin/libclang_rt.osx.a]
+  Library search paths: [;/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/lib]
+  Framework search paths: [;/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks/]
+  remove lib [System]
+  remove lib [/Library/Developer/CommandLineTools/usr/lib/clang/11.0.0/lib/darwin/libclang_rt.osx.a]
+  collapse library dir [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/lib] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/lib]
+  collapse framework dir [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks/] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks]
+  implicit libs: []
+  implicit dirs: [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/lib]
+  implicit fwks: [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks]
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: /Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/GNN_RL/.dacecache/transpose_tiled/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_6ccec/fast && /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_6ccec.dir/build.make CMakeFiles/cmTC_6ccec.dir/build
+Building CXX object CMakeFiles/cmTC_6ccec.dir/CMakeCXXCompilerABI.cpp.o
+/usr/local/bin/g++-9   -std=c++14 -fPIC -Wall -Wextra -O3 -march=native -ffast-math -Wno-unused-parameter -Wno-unused-label  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk   -v -Wl,-v -o CMakeFiles/cmTC_6ccec.dir/CMakeCXXCompilerABI.cpp.o -c "/Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/lib/python3.7/site-packages/cmake/data/CMake.app/Contents/share/cmake-3.18/Modules/CMakeCXXCompilerABI.cpp"
+Using built-in specs.
+COLLECT_GCC=/usr/local/bin/g++-9
+Target: x86_64-apple-darwin20
+Configured with: ../configure --build=x86_64-apple-darwin20 --prefix=/usr/local/Cellar/gcc@9/9.3.0 --libdir=/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9 --disable-nls --enable-checking=release --enable-languages=c,c++,objc,obj-c++,fortran --program-suffix=-9 --with-gmp=/usr/local/opt/gmp --with-mpfr=/usr/local/opt/mpfr --with-mpc=/usr/local/opt/libmpc --with-isl=/usr/local/opt/isl --with-system-zlib --with-pkgversion='Homebrew GCC 9.3.0' --with-bugurl=https://github.com/Homebrew/homebrew-core/issues --disable-multilib --with-native-system-header-dir=/usr/include --with-sysroot=/Library/Developer/CommandLineTools/SDKs/MacOSX11.0.sdk SED=/usr/bin/sed
+Thread model: posix
+gcc version 9.3.0 (Homebrew GCC 9.3.0) 
+COLLECT_GCC_OPTIONS='-std=c++14' '-fPIC' '-Wall' '-Wextra' '-O3' '-march=native' '-ffast-math' '-Wno-unused-parameter' '-Wno-unused-label' '-isysroot' '/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk' '-v' '-o' 'CMakeFiles/cmTC_6ccec.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-mmacosx-version-min=10.16.0' '-asm_macosx_version_min=10.16' '-shared-libgcc'
+ /usr/local/Cellar/gcc@9/9.3.0/libexec/gcc/x86_64-apple-darwin20/9.3.0/cc1plus -quiet -v -D__DYNAMIC__ -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk /Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/lib/python3.7/site-packages/cmake/data/CMake.app/Contents/share/cmake-3.18/Modules/CMakeCXXCompilerABI.cpp -march=skylake -mmmx -mno-3dnow -msse -msse2 -msse3 -mssse3 -mno-sse4a -mcx16 -msahf -mmovbe -maes -mno-sha -mpclmul -mpopcnt -mabm -mno-lwp -mfma -mno-fma4 -mno-xop -mbmi -msgx -mbmi2 -mno-pconfig -mno-wbnoinvd -mno-tbm -mavx -mavx2 -msse4.2 -msse4.1 -mlzcnt -mno-rtm -mno-hle -mrdrnd -mf16c -mfsgsbase -mrdseed -mprfchw -madx -mfxsr -mxsave -mxsaveopt -mno-avx512f -mno-avx512er -mno-avx512cd -mno-avx512pf -mno-prefetchwt1 -mclflushopt -mxsavec -mxsaves -mno-avx512dq -mno-avx512bw -mno-avx512vl -mno-avx512ifma -mno-avx512vbmi -mno-avx5124fmaps -mno-avx5124vnniw -mno-clwb -mno-mwaitx -mno-clzero -mno-pku -mno-rdpid -mno-gfni -mno-shstk -mno-avx512vbmi2 -mno-avx512vnni -mno-vaes -mno-vpclmulqdq -mno-avx512bitalg -mno-movdiri -mno-movdir64b -mno-waitpkg -mno-cldemote -mno-ptwrite --param l1-cache-size=32 --param l1-cache-line-size=64 --param l2-cache-size=6144 -mtune=skylake -fPIC -quiet -dumpbase CMakeCXXCompilerABI.cpp -mmacosx-version-min=10.16.0 -auxbase-strip CMakeFiles/cmTC_6ccec.dir/CMakeCXXCompilerABI.cpp.o -O3 -Wall -Wextra -Wno-unused-parameter -Wno-unused-label -std=c++14 -version -fPIC -ffast-math -o /var/folders/cy/80c29z7j4374f00mhbsdtlkm0000gn/T//ccRSYm38.s
+GNU C++14 (Homebrew GCC 9.3.0) version 9.3.0 (x86_64-apple-darwin20)
+	compiled by GNU C version 9.3.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.1, isl version isl-0.22.1-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/local/include"
+ignoring nonexistent directory "/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/../../../../../../x86_64-apple-darwin20/include"
+ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/Library/Frameworks"
+#include "..." search starts here:
+#include <...> search starts here:
+ /usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/../../../../../../include/c++/9.3.0
+ /usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/../../../../../../include/c++/9.3.0/x86_64-apple-darwin20
+ /usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/../../../../../../include/c++/9.3.0/backward
+ /usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/include
+ /usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/include-fixed
+ /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/include
+ /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks
+End of search list.
+GNU C++14 (Homebrew GCC 9.3.0) version 9.3.0 (x86_64-apple-darwin20)
+	compiled by GNU C version 9.3.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.1, isl version isl-0.22.1-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+Compiler executable checksum: ab1641eb1dc4826dd5bf1c67715a4674
+COLLECT_GCC_OPTIONS='-std=c++14' '-fPIC' '-Wall' '-Wextra' '-O3' '-march=native' '-ffast-math' '-Wno-unused-parameter' '-Wno-unused-label' '-isysroot' '/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk' '-v' '-o' 'CMakeFiles/cmTC_6ccec.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-mmacosx-version-min=10.16.0'  '-shared-libgcc'
+ as -arch x86_64 -v -force_cpusubtype_ALL -mmacosx-version-min=10.16 -o CMakeFiles/cmTC_6ccec.dir/CMakeCXXCompilerABI.cpp.o /var/folders/cy/80c29z7j4374f00mhbsdtlkm0000gn/T//ccRSYm38.s
+Apple clang version 11.0.0 (clang-1100.0.33.17)
+Target: x86_64-apple-darwin20.2.0
+Thread model: posix
+InstalledDir: /Library/Developer/CommandLineTools/usr/bin
+ "/Library/Developer/CommandLineTools/usr/bin/clang" -cc1as -triple x86_64-apple-macosx10.16.0 -filetype obj -main-file-name ccRSYm38.s -target-cpu penryn -fdebug-compilation-dir /Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/GNN_RL/.dacecache/transpose_tiled/build/CMakeFiles/CMakeTmp -dwarf-debug-producer Apple clang version 11.0.0 (clang-1100.0.33.17) -dwarf-version=4 -mrelocation-model pic -o CMakeFiles/cmTC_6ccec.dir/CMakeCXXCompilerABI.cpp.o /var/folders/cy/80c29z7j4374f00mhbsdtlkm0000gn/T//ccRSYm38.s
+COMPILER_PATH=/usr/local/Cellar/gcc@9/9.3.0/libexec/gcc/x86_64-apple-darwin20/9.3.0/:/usr/local/Cellar/gcc@9/9.3.0/libexec/gcc/x86_64-apple-darwin20/9.3.0/:/usr/local/Cellar/gcc@9/9.3.0/libexec/gcc/x86_64-apple-darwin20/:/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/:/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/
+LIBRARY_PATH=/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/:/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/../../../
+COLLECT_GCC_OPTIONS='-std=c++14' '-fPIC' '-Wall' '-Wextra' '-O3' '-march=native' '-ffast-math' '-Wno-unused-parameter' '-Wno-unused-label' '-isysroot' '/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk' '-v' '-o' 'CMakeFiles/cmTC_6ccec.dir/CMakeCXXCompilerABI.cpp.o' '-c' '-mmacosx-version-min=10.16.0'  '-shared-libgcc'
+Linking CXX executable cmTC_6ccec
+"/Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/lib/python3.7/site-packages/cmake/data/CMake.app/Contents/bin/cmake" -E cmake_link_script CMakeFiles/cmTC_6ccec.dir/link.txt --verbose=1
+/usr/local/bin/g++-9 -std=c++14 -fPIC -Wall -Wextra -O3 -march=native -ffast-math -Wno-unused-parameter -Wno-unused-label  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names  -v -Wl,-v CMakeFiles/cmTC_6ccec.dir/CMakeCXXCompilerABI.cpp.o -o cmTC_6ccec 
+Using built-in specs.
+COLLECT_GCC=/usr/local/bin/g++-9
+COLLECT_LTO_WRAPPER=/usr/local/Cellar/gcc@9/9.3.0/libexec/gcc/x86_64-apple-darwin20/9.3.0/lto-wrapper
+Target: x86_64-apple-darwin20
+Configured with: ../configure --build=x86_64-apple-darwin20 --prefix=/usr/local/Cellar/gcc@9/9.3.0 --libdir=/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9 --disable-nls --enable-checking=release --enable-languages=c,c++,objc,obj-c++,fortran --program-suffix=-9 --with-gmp=/usr/local/opt/gmp --with-mpfr=/usr/local/opt/mpfr --with-mpc=/usr/local/opt/libmpc --with-isl=/usr/local/opt/isl --with-system-zlib --with-pkgversion='Homebrew GCC 9.3.0' --with-bugurl=https://github.com/Homebrew/homebrew-core/issues --disable-multilib --with-native-system-header-dir=/usr/include --with-sysroot=/Library/Developer/CommandLineTools/SDKs/MacOSX11.0.sdk SED=/usr/bin/sed
+Thread model: posix
+gcc version 9.3.0 (Homebrew GCC 9.3.0) 
+COMPILER_PATH=/usr/local/Cellar/gcc@9/9.3.0/libexec/gcc/x86_64-apple-darwin20/9.3.0/:/usr/local/Cellar/gcc@9/9.3.0/libexec/gcc/x86_64-apple-darwin20/9.3.0/:/usr/local/Cellar/gcc@9/9.3.0/libexec/gcc/x86_64-apple-darwin20/:/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/:/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/
+LIBRARY_PATH=/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/:/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/../../../
+COLLECT_GCC_OPTIONS='-std=c++14' '-fPIC' '-Wall' '-Wextra' '-O3' '-march=native' '-ffast-math' '-Wno-unused-parameter' '-Wno-unused-label' '-isysroot' '/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk' '-v' '-o' 'cmTC_6ccec' '-mmacosx-version-min=10.16.0' '-asm_macosx_version_min=10.16' '-shared-libgcc'
+ /usr/local/Cellar/gcc@9/9.3.0/libexec/gcc/x86_64-apple-darwin20/9.3.0/collect2 -dynamic -arch x86_64 -macosx_version_min 10.16.0 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -weak_reference_mismatches non-weak -o cmTC_6ccec -L/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0 -L/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/../../.. -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_6ccec.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lSystem -lgcc_ext.10.5 -lgcc -lSystem /usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/crtfastmath.o -no_compact_unwind -v
+collect2 version 9.3.0
+/usr/bin/ld -dynamic -arch x86_64 -macosx_version_min 10.16.0 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -weak_reference_mismatches non-weak -o cmTC_6ccec -L/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0 -L/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/../../.. -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_6ccec.dir/CMakeCXXCompilerABI.cpp.o -lstdc++ -lSystem -lgcc_ext.10.5 -lgcc -lSystem /usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/crtfastmath.o -no_compact_unwind -v
+@(#)PROGRAM:ld  PROJECT:ld64-530
+BUILD 18:57:17 Dec 13 2019
+configured to support archs: armv6 armv7 armv7s arm64 arm64e arm64_32 i386 x86_64 x86_64h armv6m armv7k armv7m armv7em
+@(#)PROGRAM:ld  PROJECT:ld64-530
+BUILD 18:57:17 Dec 13 2019
+configured to support archs: armv6 armv7 armv7s arm64 arm64e arm64_32 i386 x86_64 x86_64h armv6m armv7k armv7m armv7em
+Library search paths:
+	/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0
+	/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9
+	/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/lib
+Framework search paths:
+	/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks/
+
+
+
+Parsed CXX implicit include dir info from above output: rv=done
+  found start of include info
+  found start of implicit include info
+    add: [/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/../../../../../../include/c++/9.3.0]
+    add: [/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/../../../../../../include/c++/9.3.0/x86_64-apple-darwin20]
+    add: [/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/../../../../../../include/c++/9.3.0/backward]
+    add: [/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/include]
+    add: [/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/include-fixed]
+    add: [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/include]
+    add: [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks]
+  end of search list found
+  collapse include dir [/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/../../../../../../include/c++/9.3.0] ==> [/usr/local/Cellar/gcc@9/9.3.0/include/c++/9.3.0]
+  collapse include dir [/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/../../../../../../include/c++/9.3.0/x86_64-apple-darwin20] ==> [/usr/local/Cellar/gcc@9/9.3.0/include/c++/9.3.0/x86_64-apple-darwin20]
+  collapse include dir [/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/../../../../../../include/c++/9.3.0/backward] ==> [/usr/local/Cellar/gcc@9/9.3.0/include/c++/9.3.0/backward]
+  collapse include dir [/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/include] ==> [/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/include]
+  collapse include dir [/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/include-fixed] ==> [/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/include-fixed]
+  collapse include dir [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/include] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/include]
+  collapse include dir [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks]
+  implicit include dirs: [/usr/local/Cellar/gcc@9/9.3.0/include/c++/9.3.0;/usr/local/Cellar/gcc@9/9.3.0/include/c++/9.3.0/x86_64-apple-darwin20;/usr/local/Cellar/gcc@9/9.3.0/include/c++/9.3.0/backward;/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/include;/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/include-fixed;/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/include;/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks]
+
+
+Parsed CXX implicit link information from above output:
+  link line regex: [^( *|.*[/\])(g\+\+-9|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/GNN_RL/.dacecache/transpose_tiled/build/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command(s):/usr/bin/make cmTC_6ccec/fast && /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_6ccec.dir/build.make CMakeFiles/cmTC_6ccec.dir/build]
+  ignore line: [Building CXX object CMakeFiles/cmTC_6ccec.dir/CMakeCXXCompilerABI.cpp.o]
+  link line: [/usr/local/bin/g++-9   -std=c++14 -fPIC -Wall -Wextra -O3 -march=native -ffast-math -Wno-unused-parameter -Wno-unused-label  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk   -v -Wl,-v -o CMakeFiles/cmTC_6ccec.dir/CMakeCXXCompilerABI.cpp.o -c "/Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/lib/python3.7/site-packages/cmake/data/CMake.app/Contents/share/cmake-3.18/Modules/CMakeCXXCompilerABI.cpp"]
+    arg [/usr/local/bin/g++-9] ==> ignore
+    arg [-std=c++14] ==> ignore
+    arg [-fPIC] ==> ignore
+    arg [-Wall] ==> ignore
+    arg [-Wextra] ==> ignore
+    arg [-O3] ==> ignore
+    arg [-march=native] ==> ignore
+    arg [-ffast-math] ==> ignore
+    arg [-Wno-unused-parameter] ==> ignore
+    arg [-Wno-unused-label] ==> ignore
+    arg [-isysroot] ==> ignore
+    arg [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk] ==> ignore
+    arg [-v] ==> ignore
+    arg [-Wl,-v] ==> ignore
+    arg [-o] ==> ignore
+    arg [CMakeFiles/cmTC_6ccec.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+    arg [-c] ==> ignore
+    arg [/Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/lib/python3.7/site-packages/cmake/data/CMake.app/Contents/share/cmake-3.18/Modules/CMakeCXXCompilerABI.cpp] ==> ignore
+  Library search paths: [;/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0;/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9;/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/lib]
+  Framework search paths: [;/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks/]
+  collapse library dir [/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0] ==> [/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0]
+  collapse library dir [/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9] ==> [/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9]
+  collapse library dir [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/lib] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/lib]
+  collapse framework dir [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks/] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks]
+  implicit libs: []
+  implicit dirs: [/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0;/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9;/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/lib]
+  implicit fwks: [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks]
+
+
+Determining if the include file pthread.h exists passed with the following output:
+Change Dir: /Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/GNN_RL/.dacecache/transpose_tiled/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_271e4/fast && /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_271e4.dir/build.make CMakeFiles/cmTC_271e4.dir/build
+Building C object CMakeFiles/cmTC_271e4.dir/CheckIncludeFile.c.o
+/Library/Developer/CommandLineTools/usr/bin/cc   -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -o CMakeFiles/cmTC_271e4.dir/CheckIncludeFile.c.o -c "/Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/GNN_RL/.dacecache/transpose_tiled/build/CMakeFiles/CMakeTmp/CheckIncludeFile.c"
+Linking C executable cmTC_271e4
+"/Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/lib/python3.7/site-packages/cmake/data/CMake.app/Contents/bin/cmake" -E cmake_link_script CMakeFiles/cmTC_271e4.dir/link.txt --verbose=1
+/Library/Developer/CommandLineTools/usr/bin/cc  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_271e4.dir/CheckIncludeFile.c.o -o cmTC_271e4 
+
+
+
+Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD succeeded with the following output:
+Change Dir: /Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/GNN_RL/.dacecache/transpose_tiled/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_98be7/fast && /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_98be7.dir/build.make CMakeFiles/cmTC_98be7.dir/build
+Building C object CMakeFiles/cmTC_98be7.dir/src.c.o
+/Library/Developer/CommandLineTools/usr/bin/cc   -DCMAKE_HAVE_LIBC_PTHREAD -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -o CMakeFiles/cmTC_98be7.dir/src.c.o -c "/Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/GNN_RL/.dacecache/transpose_tiled/build/CMakeFiles/CMakeTmp/src.c"
+Linking C executable cmTC_98be7
+"/Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/lib/python3.7/site-packages/cmake/data/CMake.app/Contents/bin/cmake" -E cmake_link_script CMakeFiles/cmTC_98be7.dir/link.txt --verbose=1
+/Library/Developer/CommandLineTools/usr/bin/cc  -DCMAKE_HAVE_LIBC_PTHREAD -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_98be7.dir/src.c.o -o cmTC_98be7 
+
+
+Source file was:
+#include <pthread.h>
+
+void* test_func(void* data)
+{
+  return data;
+}
+
+int main(void)
+{
+  pthread_t thread;
+  pthread_create(&thread, NULL, test_func, NULL);
+  pthread_detach(thread);
+  pthread_cancel(thread);
+  pthread_join(thread, NULL);
+  pthread_atfork(NULL, NULL, NULL);
+  pthread_exit(NULL);
+
+  return 0;
+}
+
+Detecting CXX OpenMP compiler ABI info compiled with the following output:
+Change Dir: /Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/GNN_RL/.dacecache/transpose_tiled/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/make cmTC_fca3d/fast && /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_fca3d.dir/build.make CMakeFiles/cmTC_fca3d.dir/build
+Building CXX object CMakeFiles/cmTC_fca3d.dir/OpenMPTryFlag.cpp.o
+/usr/local/bin/g++-9   -std=c++14 -fPIC -Wall -Wextra -O3 -march=native -ffast-math -Wno-unused-parameter -Wno-unused-label -fopenmp -v -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -o CMakeFiles/cmTC_fca3d.dir/OpenMPTryFlag.cpp.o -c "/Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/GNN_RL/.dacecache/transpose_tiled/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp"
+Using built-in specs.
+COLLECT_GCC=/usr/local/bin/g++-9
+Target: x86_64-apple-darwin20
+Configured with: ../configure --build=x86_64-apple-darwin20 --prefix=/usr/local/Cellar/gcc@9/9.3.0 --libdir=/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9 --disable-nls --enable-checking=release --enable-languages=c,c++,objc,obj-c++,fortran --program-suffix=-9 --with-gmp=/usr/local/opt/gmp --with-mpfr=/usr/local/opt/mpfr --with-mpc=/usr/local/opt/libmpc --with-isl=/usr/local/opt/isl --with-system-zlib --with-pkgversion='Homebrew GCC 9.3.0' --with-bugurl=https://github.com/Homebrew/homebrew-core/issues --disable-multilib --with-native-system-header-dir=/usr/include --with-sysroot=/Library/Developer/CommandLineTools/SDKs/MacOSX11.0.sdk SED=/usr/bin/sed
+Thread model: posix
+gcc version 9.3.0 (Homebrew GCC 9.3.0) 
+COLLECT_GCC_OPTIONS='-std=c++14' '-fPIC' '-Wall' '-Wextra' '-O3' '-march=native' '-ffast-math' '-Wno-unused-parameter' '-Wno-unused-label' '-fopenmp' '-v' '-isysroot' '/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk' '-o' 'CMakeFiles/cmTC_fca3d.dir/OpenMPTryFlag.cpp.o' '-c' '-mmacosx-version-min=10.16.0' '-asm_macosx_version_min=10.16' '-shared-libgcc'
+ /usr/local/Cellar/gcc@9/9.3.0/libexec/gcc/x86_64-apple-darwin20/9.3.0/cc1plus -quiet -v -D__DYNAMIC__ -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk /Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/GNN_RL/.dacecache/transpose_tiled/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp -march=skylake -mmmx -mno-3dnow -msse -msse2 -msse3 -mssse3 -mno-sse4a -mcx16 -msahf -mmovbe -maes -mno-sha -mpclmul -mpopcnt -mabm -mno-lwp -mfma -mno-fma4 -mno-xop -mbmi -msgx -mbmi2 -mno-pconfig -mno-wbnoinvd -mno-tbm -mavx -mavx2 -msse4.2 -msse4.1 -mlzcnt -mno-rtm -mno-hle -mrdrnd -mf16c -mfsgsbase -mrdseed -mprfchw -madx -mfxsr -mxsave -mxsaveopt -mno-avx512f -mno-avx512er -mno-avx512cd -mno-avx512pf -mno-prefetchwt1 -mclflushopt -mxsavec -mxsaves -mno-avx512dq -mno-avx512bw -mno-avx512vl -mno-avx512ifma -mno-avx512vbmi -mno-avx5124fmaps -mno-avx5124vnniw -mno-clwb -mno-mwaitx -mno-clzero -mno-pku -mno-rdpid -mno-gfni -mno-shstk -mno-avx512vbmi2 -mno-avx512vnni -mno-vaes -mno-vpclmulqdq -mno-avx512bitalg -mno-movdiri -mno-movdir64b -mno-waitpkg -mno-cldemote -mno-ptwrite --param l1-cache-size=32 --param l1-cache-line-size=64 --param l2-cache-size=6144 -mtune=skylake -fPIC -quiet -dumpbase OpenMPTryFlag.cpp -mmacosx-version-min=10.16.0 -auxbase-strip CMakeFiles/cmTC_fca3d.dir/OpenMPTryFlag.cpp.o -O3 -Wall -Wextra -Wno-unused-parameter -Wno-unused-label -std=c++14 -version -fPIC -ffast-math -fopenmp -o /var/folders/cy/80c29z7j4374f00mhbsdtlkm0000gn/T//ccAaarpl.s
+GNU C++14 (Homebrew GCC 9.3.0) version 9.3.0 (x86_64-apple-darwin20)
+	compiled by GNU C version 9.3.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.1, isl version isl-0.22.1-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/local/include"
+ignoring nonexistent directory "/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/../../../../../../x86_64-apple-darwin20/include"
+ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/Library/Frameworks"
+#include "..." search starts here:
+#include <...> search starts here:
+ /usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/../../../../../../include/c++/9.3.0
+ /usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/../../../../../../include/c++/9.3.0/x86_64-apple-darwin20
+ /usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/../../../../../../include/c++/9.3.0/backward
+ /usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/include
+ /usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/include-fixed
+ /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/include
+ /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks
+End of search list.
+GNU C++14 (Homebrew GCC 9.3.0) version 9.3.0 (x86_64-apple-darwin20)
+	compiled by GNU C version 9.3.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.1, isl version isl-0.22.1-GMP
+
+GGC heuristics: --param ggc-min-expand=100 --param ggc-min-heapsize=131072
+Compiler executable checksum: ab1641eb1dc4826dd5bf1c67715a4674
+COLLECT_GCC_OPTIONS='-std=c++14' '-fPIC' '-Wall' '-Wextra' '-O3' '-march=native' '-ffast-math' '-Wno-unused-parameter' '-Wno-unused-label' '-fopenmp' '-v' '-isysroot' '/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk' '-o' 'CMakeFiles/cmTC_fca3d.dir/OpenMPTryFlag.cpp.o' '-c' '-mmacosx-version-min=10.16.0'  '-shared-libgcc'
+ as -arch x86_64 -v -force_cpusubtype_ALL -mmacosx-version-min=10.16 -o CMakeFiles/cmTC_fca3d.dir/OpenMPTryFlag.cpp.o /var/folders/cy/80c29z7j4374f00mhbsdtlkm0000gn/T//ccAaarpl.s
+Apple clang version 11.0.0 (clang-1100.0.33.17)
+Target: x86_64-apple-darwin20.2.0
+Thread model: posix
+InstalledDir: /Library/Developer/CommandLineTools/usr/bin
+ "/Library/Developer/CommandLineTools/usr/bin/clang" -cc1as -triple x86_64-apple-macosx10.16.0 -filetype obj -main-file-name ccAaarpl.s -target-cpu penryn -fdebug-compilation-dir /Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/GNN_RL/.dacecache/transpose_tiled/build/CMakeFiles/CMakeTmp -dwarf-debug-producer Apple clang version 11.0.0 (clang-1100.0.33.17) -dwarf-version=4 -mrelocation-model pic -o CMakeFiles/cmTC_fca3d.dir/OpenMPTryFlag.cpp.o /var/folders/cy/80c29z7j4374f00mhbsdtlkm0000gn/T//ccAaarpl.s
+COMPILER_PATH=/usr/local/Cellar/gcc@9/9.3.0/libexec/gcc/x86_64-apple-darwin20/9.3.0/:/usr/local/Cellar/gcc@9/9.3.0/libexec/gcc/x86_64-apple-darwin20/9.3.0/:/usr/local/Cellar/gcc@9/9.3.0/libexec/gcc/x86_64-apple-darwin20/:/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/:/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/
+LIBRARY_PATH=/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/:/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/../../../
+COLLECT_GCC_OPTIONS='-std=c++14' '-fPIC' '-Wall' '-Wextra' '-O3' '-march=native' '-ffast-math' '-Wno-unused-parameter' '-Wno-unused-label' '-fopenmp' '-v' '-isysroot' '/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk' '-o' 'CMakeFiles/cmTC_fca3d.dir/OpenMPTryFlag.cpp.o' '-c' '-mmacosx-version-min=10.16.0'  '-shared-libgcc'
+Linking CXX executable cmTC_fca3d
+"/Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/lib/python3.7/site-packages/cmake/data/CMake.app/Contents/bin/cmake" -E cmake_link_script CMakeFiles/cmTC_fca3d.dir/link.txt --verbose=1
+/usr/local/bin/g++-9 -std=c++14 -fPIC -Wall -Wextra -O3 -march=native -ffast-math -Wno-unused-parameter -Wno-unused-label -fopenmp -v -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_fca3d.dir/OpenMPTryFlag.cpp.o -o cmTC_fca3d  -v -Wl,-v 
+Using built-in specs.
+COLLECT_GCC=/usr/local/bin/g++-9
+COLLECT_LTO_WRAPPER=/usr/local/Cellar/gcc@9/9.3.0/libexec/gcc/x86_64-apple-darwin20/9.3.0/lto-wrapper
+Target: x86_64-apple-darwin20
+Configured with: ../configure --build=x86_64-apple-darwin20 --prefix=/usr/local/Cellar/gcc@9/9.3.0 --libdir=/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9 --disable-nls --enable-checking=release --enable-languages=c,c++,objc,obj-c++,fortran --program-suffix=-9 --with-gmp=/usr/local/opt/gmp --with-mpfr=/usr/local/opt/mpfr --with-mpc=/usr/local/opt/libmpc --with-isl=/usr/local/opt/isl --with-system-zlib --with-pkgversion='Homebrew GCC 9.3.0' --with-bugurl=https://github.com/Homebrew/homebrew-core/issues --disable-multilib --with-native-system-header-dir=/usr/include --with-sysroot=/Library/Developer/CommandLineTools/SDKs/MacOSX11.0.sdk SED=/usr/bin/sed
+Thread model: posix
+gcc version 9.3.0 (Homebrew GCC 9.3.0) 
+COMPILER_PATH=/usr/local/Cellar/gcc@9/9.3.0/libexec/gcc/x86_64-apple-darwin20/9.3.0/:/usr/local/Cellar/gcc@9/9.3.0/libexec/gcc/x86_64-apple-darwin20/9.3.0/:/usr/local/Cellar/gcc@9/9.3.0/libexec/gcc/x86_64-apple-darwin20/:/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/:/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/
+LIBRARY_PATH=/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/:/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/../../../
+COLLECT_GCC_OPTIONS='-std=c++14' '-fPIC' '-Wall' '-Wextra' '-O3' '-march=native' '-ffast-math' '-Wno-unused-parameter' '-Wno-unused-label' '-fopenmp' '-v' '-isysroot' '/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk' '-o' 'cmTC_fca3d' '-v' '-mmacosx-version-min=10.16.0' '-asm_macosx_version_min=10.16' '-shared-libgcc'
+ /usr/local/Cellar/gcc@9/9.3.0/libexec/gcc/x86_64-apple-darwin20/9.3.0/collect2 -dynamic -arch x86_64 -macosx_version_min 10.16.0 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -weak_reference_mismatches non-weak -o cmTC_fca3d -L/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0 -L/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/../../.. -search_paths_first -headerpad_max_install_names CMakeFiles/cmTC_fca3d.dir/OpenMPTryFlag.cpp.o -v -lstdc++ -lgomp -lSystem -lgcc_ext.10.5 -lgcc -lSystem /usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/crtfastmath.o -no_compact_unwind -v -v
+collect2 version 9.3.0
+/usr/bin/ld -dynamic -arch x86_64 -macosx_version_min 10.16.0 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -weak_reference_mismatches non-weak -o cmTC_fca3d -L/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0 -L/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/../../.. -search_paths_first -headerpad_max_install_names CMakeFiles/cmTC_fca3d.dir/OpenMPTryFlag.cpp.o -v -lstdc++ -lgomp -lSystem -lgcc_ext.10.5 -lgcc -lSystem /usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0/crtfastmath.o -no_compact_unwind -v -v
+@(#)PROGRAM:ld  PROJECT:ld64-530
+BUILD 18:57:17 Dec 13 2019
+configured to support archs: armv6 armv7 armv7s arm64 arm64e arm64_32 i386 x86_64 x86_64h armv6m armv7k armv7m armv7em
+@(#)PROGRAM:ld  PROJECT:ld64-530
+BUILD 18:57:17 Dec 13 2019
+configured to support archs: armv6 armv7 armv7s arm64 arm64e arm64_32 i386 x86_64 x86_64h armv6m armv7k armv7m armv7em
+@(#)PROGRAM:ld  PROJECT:ld64-530
+BUILD 18:57:17 Dec 13 2019
+configured to support archs: armv6 armv7 armv7s arm64 arm64e arm64_32 i386 x86_64 x86_64h armv6m armv7k armv7m armv7em
+Library search paths:
+	/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0
+	/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9
+	/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/lib
+Framework search paths:
+	/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks/
+
+
+
+Parsed CXX OpenMP implicit link information from above output:
+  link line regex: [^( *|.*[/\])(g\+\+-9|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/GNN_RL/.dacecache/transpose_tiled/build/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command(s):/usr/bin/make cmTC_fca3d/fast && /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_fca3d.dir/build.make CMakeFiles/cmTC_fca3d.dir/build]
+  ignore line: [Building CXX object CMakeFiles/cmTC_fca3d.dir/OpenMPTryFlag.cpp.o]
+  link line: [/usr/local/bin/g++-9   -std=c++14 -fPIC -Wall -Wextra -O3 -march=native -ffast-math -Wno-unused-parameter -Wno-unused-label -fopenmp -v -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk -o CMakeFiles/cmTC_fca3d.dir/OpenMPTryFlag.cpp.o -c "/Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/GNN_RL/.dacecache/transpose_tiled/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp"]
+    arg [/usr/local/bin/g++-9] ==> ignore
+    arg [-std=c++14] ==> ignore
+    arg [-fPIC] ==> ignore
+    arg [-Wall] ==> ignore
+    arg [-Wextra] ==> ignore
+    arg [-O3] ==> ignore
+    arg [-march=native] ==> ignore
+    arg [-ffast-math] ==> ignore
+    arg [-Wno-unused-parameter] ==> ignore
+    arg [-Wno-unused-label] ==> ignore
+    arg [-fopenmp] ==> ignore
+    arg [-v] ==> ignore
+    arg [-isysroot] ==> ignore
+    arg [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk] ==> ignore
+    arg [-o] ==> ignore
+    arg [CMakeFiles/cmTC_fca3d.dir/OpenMPTryFlag.cpp.o] ==> ignore
+    arg [-c] ==> ignore
+    arg [/Users/benediktschesch/OneDrive - ETH Zurich/MyEnv/GNN_RL/.dacecache/transpose_tiled/build/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp] ==> ignore
+  Library search paths: [;/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0;/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9;/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/lib]
+  Framework search paths: [;/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks/]
+  collapse library dir [/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0] ==> [/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0]
+  collapse library dir [/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9] ==> [/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9]
+  collapse library dir [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/lib] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/lib]
+  collapse framework dir [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks/] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks]
+  implicit libs: []
+  implicit dirs: [/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9/gcc/x86_64-apple-darwin20/9.3.0;/usr/local/Cellar/gcc@9/9.3.0/lib/gcc/9;/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/usr/lib]
+  implicit fwks: [/Library/Developer/CommandLineTools/SDKs/MacOSX10.15.sdk/System/Library/Frameworks]
+
+

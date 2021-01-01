@@ -1,0 +1,22 @@
+Compiling the C compiler identification source file "CMakeCCompilerId.c" failed.
+Compiler: /Library/Developer/CommandLineTools/usr/bin/cc 
+Build flags: 
+Id flags:  
+
+The output was:
+1
+ld: library not found for -lSystem
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" failed.
+Compiler: /usr/local/bin/g++-9 
+Build flags: -std=c++14;-fPIC;-Wall;-Wextra;-O3;-march=native;-ffast-math;-Wno-unused-parameter;-Wno-unused-label
+Id flags:  
+
+The output was:
+1
+ld: library not found for -lSystem
+collect2: error: ld returned 1 exit status
+
+

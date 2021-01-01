@@ -1,0 +1,3 @@
+extern "C" int __dace_init_test_program(double * __restrict__ A, double * __restrict__ B, double * __restrict__ C, double * __restrict__ out1, double * __restrict__ out2, double * __restrict__ out3, int M, int N, int O);
+extern "C" int __dace_exit_test_program(double * __restrict__ A, double * __restrict__ B, double * __restrict__ C, double * __restrict__ out1, double * __restrict__ out2, double * __restrict__ out3, int M, int N, int O);
+extern "C" void __program_test_program(double * __restrict__ A, double * __restrict__ B, double * __restrict__ C, double * __restrict__ out1, double * __restrict__ out2, double * __restrict__ out3, int M, int N, int O);
