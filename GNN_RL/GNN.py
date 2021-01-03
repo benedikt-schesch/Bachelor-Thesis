@@ -1,6 +1,7 @@
 #
 # This file defines the GNN structure
 #
+from numpy.core.fromnumeric import size
 import torch
 from ptgnn.neuralmodels.gnn import GraphData
 from ptgnn.neuralmodels.embeddings.linearmapembedding import FeatureRepresentationModel
@@ -10,8 +11,6 @@ from ptgnn.neuralmodels.gnn.messagepassing.residuallayers import ConcatResidualL
 import torch
 from torch import nn
 from ptgnn.neuralmodels.gnn.graphneuralnetwork import GraphNeuralNetworkModel
-import networkx as nx
-from bert_pytorch import BERT
 
 def param_enc(index,size):
     res = torch.zeros(size)
@@ -108,10 +107,9 @@ class OneHot(nn.Module):
     return result
 
 class GNN(nn.Module):
-    def __init__(self,vocab_size,max_num_param,size,embedding_dim = 64,dim_hidden = 64\
+    def __init__(self,vocab_size,size,max_num_param,embedding_dim = 64,dim_hidden = 64\
         ,num_layers = 1):
         super().__init__()
-        self.size = size
         self.max_num_param = max_num_param
         self.vocab_size = vocab_size
         self.dim_hidden = dim_hidden
@@ -122,11 +120,11 @@ class GNN(nn.Module):
         self.memlet = nn.GRU(self.embedding_dim, dim_hidden,num_layers=num_layers)
         self.trans_layers = []
         for i in [0]:
-            l = (dim_hidden+6+max_num_param)
+            l = (dim_hidden+6)
             operations = []
             operations.append(nn.Linear(l,l,bias = True))
             operations.append(nn.ReLU())
-            operations.append(nn.Linear(l, out_features=size*max_num_param,bias = True))
+            operations.append(nn.Linear(l, out_features=max_num_param*size,bias = True))
             nn.init.xavier_uniform_(operations[0].weight)
             nn.init.xavier_uniform_(operations[2].weight)
             nn.init.zeros_(operations[0].bias)
@@ -146,12 +144,23 @@ class GNN(nn.Module):
                     a = G["adjacency_lists"][j][0][0][i].item()
                     b = G["adjacency_lists"][j][0][1][i].item()
                     edges.append([a,b])
-                dic["Type"+str(j)] = edges-
+                dic["Type"+str(j)] = edges
             graph_data = GraphData(node_information,dic,{})
             data.append(graph_data)
         self.gnn_model.compute_metadata(data)
         self.gnn = self.gnn_model.build_neural_module()
         self.gnn.to(device)
+
+
+    def todevice(self,device):
+      self.gnn.to(device)
+      self.word_embeddings.to(device)
+      self.map.to(device)
+      self.memlet.to(device)
+      for i in self.trans_layers:
+        i[0].to(device)
+        i[1].to(device)
+        i[2].to(device)
 
     def node_representation(self,e):
         type_tensor = e["Type"]
@@ -176,7 +185,7 @@ class GNN(nn.Module):
             res = torch.cat((res,self.node_representation(e)))
         return res[1:]
 
-    def forward(self,X,map_entry_idx,map_entry_nparam):
+    def forward(self,X,map_entry_idx):
         X["node_data"] = {"features":self.compute_node_representations(X["node_data"])}
         X["node_to_graph_idx"] = X["node_to_graph_idx"][0]
         X["num_graphs"] = 1
@@ -184,12 +193,8 @@ class GNN(nn.Module):
             X["adjacency_lists"][i] = X["adjacency_lists"][i][0]
         #["adjacency_lists"][0] = (X["adjacency_lists"][0][0][0],X["adjacency_lists"][0][1][0])
         result = self.gnn(**X).output_node_representations
-        ret = []
-        for j in range(len(map_entry_idx)):
-            x = result[map_entry_idx[j]]
-            x = torch.cat((x[0],param_enc(map_entry_nparam[j],self.max_num_param)))
-            x = self.trans_layers[0][0](x.view(-1))
-            x = self.trans_layers[0][1](x)
-            x = self.trans_layers[0][2](x)
-            ret.append(x[:self.size*map_entry_nparam[j]].view(-1,self.size))
-        return ret
+        x = result[map_entry_idx]
+        x = self.trans_layers[0][0](x)
+        x = self.trans_layers[0][1](x)
+        x = self.trans_layers[0][2](x)
+        return x

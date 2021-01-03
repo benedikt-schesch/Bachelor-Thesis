@@ -9,6 +9,7 @@ from dace.transformation.dataflow import vectorization
 import numpy as np
 import os, glob
 import tensorflow as tf
+import matplotlib.pyplot as plt
 import copy
 from tensorflow import keras
 from sklearn.model_selection import train_test_split
@@ -16,6 +17,7 @@ import random
 from dace.sdfg import nodes, SDFG, propagation
 import re
 import torch.nn as nn
+import statistics
 import torch
 from torch.utils.data import TensorDataset, DataLoader, Dataset
 from torch import empty, optim
@@ -32,6 +34,7 @@ import networkx as nx
 from tqdm import tqdm
 import os
 import sys
+from traitlets.traitlets import Bool
 sys.path.append("/Users/benediktschesch/MyEnv")
 from utils import Encoder,map2str,mem2str
 
@@ -40,6 +43,11 @@ def one_hot(index,size):
     res[index] = 1
     return res
 
+def check_params(tilling) -> Bool:
+    for i in tilling[1:]:
+        if i != 1:
+            return False
+    return True
 
 
 #Type one-hot encoding dictionary
@@ -66,6 +74,9 @@ size = [1,4,16,64,256,1024]#raw_data["size"]
 tasklets = 0
 map_entries = 0
 
+Params = []
+Speedups = []
+
 def gen_data(data_points):
     X = []
     for data_point in tqdm(data_points):
@@ -84,25 +95,31 @@ def gen_data(data_points):
             new_data["G"]["node_to_graph_idx"] = torch.zeros(len(new_data["G"]["node_data"])).type(torch.LongTensor)
             new_data["G"]["reference_node_graph_idx"] = {}
             new_data["G"]["reference_node_ids"] = {}
-            elem = 0
-            for i in new_data["G"]["adjacency_lists"]:
-                for j in i:
-                    if list(j) != []:
-                        elem = max(elem,max(j))
+            
 
-            if len(new_data["results"]) == 0:
+            baseline_times = statistics.median(new_data["timings"][0]["time"])
+            
+            best_timing = statistics.median(new_data["timings"][0]["time"])
+            result = [size.index(1)]
+            speedup_dic = {size.index(1):1.0}
+            for times in new_data["timings"][1:]:
+                if check_params(times["tilling"]):
+                    if statistics.median(times["time"])<best_timing:
+                        best_timing = statistics.median(times["time"])
+                        result = [size.index(times["tilling"][0])]
+                    if statistics.median(times["time"]) == 0:
+                        best_timing = 0
+                        break
+                    speedup_dic[size.index(times["tilling"][0])] = baseline_times*1.0/statistics.median(times["time"])
+            if best_timing == 0:
                 continue
-            map_entry_idx = []
-            map_entry_nparam = []
-            result = []
-            for res in new_data["results"]:
-                map_entry_idx.append(res[0])
-                map_entry_nparam.append(res[1])
-                result.append(torch.Tensor([size.index(i) for i in res[2]]))
-
-            new_data["map_entry_idx"] = map_entry_idx
-            new_data["map_entry_nparam"] = map_entry_nparam
+            speedup = baseline_times*1.0/best_timing
+            Speedups.append(speedup)
+            #Params.append(len(result))
+            new_data["speedup"] = speedup
             new_data["results"] = result
+            new_data["speedup_dic"] = speedup_dic
+            del new_data["timings"]
             del new_data["file"]
             X.append(new_data)
             #if augment > 3:
@@ -112,8 +129,16 @@ def gen_data(data_points):
 
 
 raw_data["X_test"] = gen_data(data_test)
+raw_data["Average Validation Maximal Speedup"] = statistics.mean(Speedups)
+Speedups = []
 raw_data["X_train"] = gen_data(data_train)
+raw_data["Average Training Maximal Speedup"] = statistics.mean(Speedups)
 del raw_data["data"]
 raw_data["dim_in"] = len(encoder)
+
+#plt.hist(Params)
+#plt.show()
+#plt.hist(sorted(Speedups)[:-10],bins = 100)
+#plt.show()
 with open("/Users/benediktschesch/MyEnv/temp/train_data.pkl", "wb") as fp:
     pickle.dump(raw_data,fp)
