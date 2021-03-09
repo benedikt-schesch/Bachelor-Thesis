@@ -76,8 +76,9 @@ map_entries = 0
 
 Params = []
 Speedups = []
-
 def gen_data(data_points):
+    total = 0
+    positive = 0
     X = []
     for data_point in tqdm(data_points):
         encoder.shuffle_sym()
@@ -111,20 +112,31 @@ def gen_data(data_points):
                         best_timing = 0
                         break
                     speedup_dic[size.index(times["tilling"][0])] = baseline_times*1.0/statistics.median(times["time"])
+            if len(new_data["timings"][1]["tilling"]) > 1:
+                continue
             if best_timing == 0:
                 continue
             speedup = baseline_times*1.0/best_timing
             Speedups.append(speedup)
             #Params.append(len(result))
             new_data["speedup"] = speedup
-            new_data["results"] = result
+            #new_data["results"] = result
+            #print(speedup)
+            if speedup > 1.01:
+                new_data["results"] = [1]
+            else:
+                new_data["results"] = [0]
+            total += 1
+            if new_data["results"][0] == 1:
+                positive += 1
             new_data["speedup_dic"] = speedup_dic
             del new_data["timings"]
-            del new_data["file"]
+            new_data["map_entry"] = data_point["G"]["node_data"][data_point["map_entry_idx"]]
             X.append(new_data)
             #if augment > 3:
             #    if total == 0 or num_correct*1.0/total < 0.1:
             #        break
+    print(positive*1.0/total)
     return X
 
 
@@ -135,6 +147,7 @@ raw_data["X_train"] = gen_data(data_train)
 raw_data["Average Training Maximal Speedup"] = statistics.mean(Speedups)
 del raw_data["data"]
 raw_data["dim_in"] = len(encoder)
+raw_data["encoder"] = encoder
 
 #plt.hist(Params)
 #plt.show()

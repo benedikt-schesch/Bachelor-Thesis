@@ -24,7 +24,7 @@ def create_graph2class_gnn_model(hidden_state_size: int = 2, embedding_size = 2,
             state_dimension=hidden_state_size,
             message_dimension=hidden_state_size,
             num_edge_types=num_edges,
-            message_aggregation_function="max",
+            message_aggregation_function="mean",
             dropout_rate=dropout_rate,
         )
         r1 = ConcatResidualLayer(hidden_state_size)
@@ -42,7 +42,7 @@ def create_graph2class_gnn_model(hidden_state_size: int = 2, embedding_size = 2,
                 state_dimension=2 * hidden_state_size,
                 message_dimension=hidden_state_size,
                 num_edge_types=num_edges,
-                message_aggregation_function="max",
+                message_aggregation_function="mean",
                 dropout_rate=dropout_rate,
             ),
         ]
@@ -53,7 +53,7 @@ def create_graph2class_gnn_model(hidden_state_size: int = 2, embedding_size = 2,
             message_dimension=hidden_state_size,
             output_state_dimension=hidden_state_size,
             num_edge_types=num_edges,
-            message_aggregation_function="max",
+            message_aggregation_function="mean",
             use_layer_norm = False,
             message_activation = None,
             dropout_rate=0,
@@ -64,7 +64,7 @@ def create_graph2class_gnn_model(hidden_state_size: int = 2, embedding_size = 2,
             message_dimension=2 * hidden_state_size,
             output_state_dimension=hidden_state_size,
             num_edge_types=num_edges,
-            message_aggregation_function="max",
+            message_aggregation_function="mean",
             use_layer_norm = False,
             message_activation = None,
             dropout_rate=0,
@@ -106,6 +106,56 @@ class OneHot(nn.Module):
         result[index][i] = 1
     return result
 
+class Embedder(nn.Module):
+    def __init__(self,vocab_size,size,max_num_param,embedding_dim = 64,dim_hidden = 64\
+    ,num_layers = 1):
+        super().__init__()
+        self.max_num_param = max_num_param
+        self.vocab_size = vocab_size
+        self.dim_hidden = dim_hidden
+        self.embedding_dim = embedding_dim
+        self.num_layers = num_layers
+        self.word_embeddings = nn.Embedding(vocab_size, embedding_dim)
+        self.map = nn.GRU(self.embedding_dim, dim_hidden,num_layers=num_layers)
+        self.map_decode = nn.GRU(dim_hidden, dim_hidden,num_layers=num_layers)
+        self.map_output_layer = nn.Linear(self.dim_hidden, vocab_size)
+        self.memlet = nn.GRU(self.embedding_dim, dim_hidden,num_layers=num_layers)
+        self.memlet_decode = nn.GRU(dim_hidden, dim_hidden,num_layers=num_layers)
+        self.memlet_output_layer = nn.Linear(self.dim_hidden, vocab_size)
+    
+    def map_embedding(self,x):
+      data = x['data']
+      data = self.word_embeddings(data).view(len(data[0]),-1 , self.embedding_dim)
+      hidden = torch.zeros((self.num_layers,1,self.dim_hidden))
+      data, _ = self.map(data, hidden)
+      return data[-1]
+
+    def mem_embedding(self,x):
+      data = x['data']
+      data = self.word_embeddings(data).view(len(data[0]),-1 , self.embedding_dim)
+      hidden = torch.zeros((self.num_layers,1,self.dim_hidden))
+      data, _ = self.memlet(data, hidden)
+      return data[-1]
+
+    def forward(self,x):
+        if x["Type"][0][0] == 1:
+            result = []
+            data = self.map_embedding(x)
+            input = torch.zeros((self.num_layers,1,self.dim_hidden))
+            for i in range(len(x['data'][0])):
+                input,data = self.map_decode(input,data.reshape(1,1,-1))
+                result.append(input.reshape(-1))
+            result = torch.stack(result)
+            return self.map_output_layer(result)
+        elif x["Type"][0][5] == 1:
+            result = []
+            data = self.mem_embedding(x)
+            input = torch.zeros((self.num_layers,1,self.dim_hidden))
+            for i in range(len(x['data'][0])):
+                input,data = self.memlet_decode(input,data.reshape(1,1,-1))
+                result.append(input.reshape(-1))
+            result = torch.stack(result)
+            return self.memlet_output_layer(result)
 class GNN(nn.Module):
     def __init__(self,vocab_size,size,max_num_param,embedding_dim = 64,dim_hidden = 64\
         ,num_layers = 1):
@@ -119,17 +169,12 @@ class GNN(nn.Module):
         self.map = nn.GRU(self.embedding_dim, dim_hidden,num_layers=num_layers)
         self.memlet = nn.GRU(self.embedding_dim, dim_hidden,num_layers=num_layers)
         self.trans_layers = []
-        for i in [0]:
-            l = (dim_hidden+6)
-            operations = []
-            operations.append(nn.Linear(l,l,bias = True))
-            operations.append(nn.ReLU())
-            operations.append(nn.Linear(l, out_features=max_num_param*size,bias = True))
-            nn.init.xavier_uniform_(operations[0].weight)
-            nn.init.xavier_uniform_(operations[2].weight)
-            nn.init.zeros_(operations[0].bias)
-            nn.init.zeros_(operations[2].bias)
-            self.trans_layers.append(operations)
+        l = (dim_hidden+6)
+        self.out1 = nn.Linear(l,l,bias = True)
+        self.rel1 = nn.ReLU()
+        self.out2 = nn.Linear(l,l,bias = True)
+        self.rel2 = nn.ReLU()
+        self.out3 = nn.Linear(l, out_features=2,bias = True)
         self.gnn_model = create_graph2class_gnn_model(hidden_state_size=dim_hidden+6,embedding_size = dim_hidden+6)
     
     def compute_metada(self,data_points,device):
@@ -194,7 +239,9 @@ class GNN(nn.Module):
         #["adjacency_lists"][0] = (X["adjacency_lists"][0][0][0],X["adjacency_lists"][0][1][0])
         result = self.gnn(**X).output_node_representations
         x = result[map_entry_idx]
-        x = self.trans_layers[0][0](x)
-        x = self.trans_layers[0][1](x)
-        x = self.trans_layers[0][2](x)
+        x = self.out1(x)
+        x = self.rel1(x)
+        x = self.out2(x)
+        x = self.rel2(x)
+        x = self.out3(x)
         return x

@@ -131,6 +131,17 @@ class Encoder():
     def __len__(self):
         return self.len
 
+    def maping(self):
+        result = []
+        for i in self.dic:
+            result.append([i,"Special"])
+        for i in self.dic_sym:
+            result.append([i,"Symbol"])
+        for dic in self.dic_params:
+            for i in self.dic_params[dic]:
+                result.append([dic+str(i),"Parameter"])
+        return result
+
 
     def encode(self,text):
         if text == "":

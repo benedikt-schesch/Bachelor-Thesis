@@ -30,11 +30,11 @@ import sys
 sys.path.append("/Users/benediktschesch/MyEnv")
 from utils import extract_map,extract_memlet,memlet2dic,map2dic,mem2str,map2str
 
-file = sys.argv[1]
-path = sys.argv[2]
-id = sys.argv[3]
-size_of_inputs = int(sys.argv[4])
-storepath = str(path)+str(id)+".pkl"
+file = "/Users/benediktschesch/MyEnv/tests/.dacecache/test67/program.sdfg"
+path = "/Users/benediktschesch/MyEnv/temp"
+id = 9999
+size_of_inputs = 2048
+storepath = "/Users/benediktschesch/MyEnv/temp/useless.pkl"
 
 def enum_one_hot(size):
     res = [[0]*size for i in range(size)]
@@ -97,8 +97,8 @@ size = [1,4,16,64,256,1024]
 
 output = {"data":data_points,"max_num_param":max_num_param,"max_free_symbols":max_free_symbols, \
         "max_num_map_entry": max_num_map_entry,"size":size,"file":file}
-with open(storepath, "wb") as fp:
-    pickle.dump(output,fp)
+#with open(storepath, "wb") as fp:
+#    pickle.dump(output,fp)
 
 type_dic = {}
 type_dic[MultiConnectorEdge] = 1
@@ -115,7 +115,8 @@ try:
     if time.time() - start_time > 30:
         sys.exit()
 except:
-    sys.exit()
+    #sys.exit()
+    raise
 #Itterate over all SDFGS
 for sdfg in file_sdfg.all_sdfgs_recursive():
     for augment in range(1):
