@@ -8,3 +8,6 @@ lib
 bin
 pyvenv.cfg
 GNN_RL/.dacecache
+GNN_RL2/SDFGS
+GNN_RL2/ENC_SDFGS
+GNN_RL2/dataset
